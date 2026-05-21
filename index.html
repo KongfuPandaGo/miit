@@ -1,0 +1,2215 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>游戏交友 App MVP 交互原型</title>
+  <style>
+    :root {
+      --bg: #f6f4ef;
+      --surface: #ffffff;
+      --surface-2: #f0f7f4;
+      --ink: #17201d;
+      --muted: #6f7a74;
+      --line: #e4e1d9;
+      --brand: #16a085;
+      --brand-dark: #0e6f61;
+      --accent: #f4b740;
+      --danger: #e35d5b;
+      --shadow: 0 18px 48px rgba(25, 32, 29, .16);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(135deg, rgba(22, 160, 133, .16), transparent 34%),
+        linear-gradient(315deg, rgba(244, 183, 64, .18), transparent 32%),
+        var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .workspace {
+      width: min(1180px, 100%);
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+      gap: 28px;
+      align-items: center;
+    }
+
+    .brief {
+      background: rgba(255, 255, 255, .72);
+      border: 1px solid rgba(255, 255, 255, .8);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 8px 30px rgba(23, 32, 29, .08);
+      backdrop-filter: blur(12px);
+    }
+
+    .brief h1 {
+      margin: 0 0 12px;
+      font-size: 28px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .brief p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .brief ul {
+      margin: 16px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 14px;
+    }
+
+    .phone {
+      width: 390px;
+      height: 844px;
+      margin: 0 auto;
+      background: var(--surface);
+      border-radius: 34px;
+      box-shadow: var(--shadow);
+      border: 8px solid #1c2220;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .status {
+      height: 26px;
+      background: var(--surface);
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      padding: 0 20px 4px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .app {
+      height: calc(100% - 26px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #faf9f6;
+    }
+
+    .screen {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 16px 96px;
+      display: none;
+    }
+
+    .screen.active { display: block; }
+    .screen::-webkit-scrollbar { width: 0; }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .city {
+      font-size: 18px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .search {
+      flex: 1;
+      min-width: 0;
+      height: 38px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      font-size: 13px;
+    }
+
+    button {
+      border: 0;
+      background: none;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      font-weight: 800;
+    }
+
+    .hero-card {
+      min-height: 150px;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      background:
+        linear-gradient(120deg, rgba(16, 65, 58, .9), rgba(22, 160, 133, .68)),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='400' viewBox='0 0 800 400'%3E%3Crect width='800' height='400' fill='%2316a085'/%3E%3Ccircle cx='120' cy='110' r='54' fill='%23f4b740' opacity='.7'/%3E%3Crect x='430' y='70' width='210' height='130' rx='10' fill='%23ffffff' opacity='.16'/%3E%3Cpath d='M70 320 C210 230 310 360 460 255 S690 230 760 110' stroke='%23fff' stroke-width='20' fill='none' opacity='.25'/%3E%3C/svg%3E");
+      background-size: cover;
+      color: #fff;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: end;
+      margin-bottom: 14px;
+      text-align: left;
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 20%, rgba(0, 0, 0, .62));
+      pointer-events: none;
+    }
+
+    .hero-card h2,
+    .hero-card p {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-card.werewolf {
+      background:
+        linear-gradient(120deg, rgba(18, 33, 30, .45), rgba(22, 160, 133, .18)),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='420' viewBox='0 0 900 420'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1' y1='0' y2='1'%3E%3Cstop stop-color='%2315302c'/%3E%3Cstop offset='1' stop-color='%2316a085'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='900' height='420' fill='url(%23g)'/%3E%3Crect x='88' y='94' width='180' height='250' rx='18' fill='%23f8f5e9' opacity='.96'/%3E%3Crect x='302' y='70' width='180' height='250' rx='18' fill='%23f4b740' opacity='.94'/%3E%3Crect x='516' y='105' width='180' height='250' rx='18' fill='%23ffffff' opacity='.9'/%3E%3Ccircle cx='178' cy='182' r='46' fill='%2317201d' opacity='.82'/%3E%3Cpath d='M158 176 L176 134 L196 176 Z' fill='%2317201d'/%3E%3Cpath d='M146 224 C176 260 214 236 214 202' stroke='%2317201d' stroke-width='10' fill='none'/%3E%3Ccircle cx='392' cy='168' r='50' fill='%23fff' opacity='.86'/%3E%3Cpath d='M348 236 H438' stroke='%23fff' stroke-width='18' stroke-linecap='round' opacity='.86'/%3E%3Ccircle cx='606' cy='190' r='44' fill='%23e35d5b' opacity='.9'/%3E%3Cpath d='M604 148 L648 240 H560 Z' fill='%23e35d5b' opacity='.85'/%3E%3Cpath d='M70 360 C240 300 320 410 520 332 S760 290 842 190' stroke='%23fff' stroke-width='14' fill='none' opacity='.2'/%3E%3C/svg%3E");
+      background-size: cover;
+      background-position: center;
+    }
+
+    .hero-card.switch {
+      background:
+        linear-gradient(120deg, rgba(28, 37, 58, .4), rgba(227, 93, 91, .12)),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='420' viewBox='0 0 900 420'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1' y1='0' y2='1'%3E%3Cstop stop-color='%233b7ddd'/%3E%3Cstop offset='1' stop-color='%23e35d5b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='900' height='420' fill='url(%23g)'/%3E%3Crect x='140' y='86' width='620' height='254' rx='40' fill='%2317201d' opacity='.88'/%3E%3Crect x='252' y='110' width='396' height='206' rx='18' fill='%23f8f5e9'/%3E%3Crect x='146' y='94' width='112' height='238' rx='34' fill='%2316a085'/%3E%3Crect x='642' y='94' width='112' height='238' rx='34' fill='%23f4b740'/%3E%3Ccircle cx='202' cy='184' r='26' fill='%23fff' opacity='.9'/%3E%3Cpath d='M182 260 H224 M202 240 V280' stroke='%23fff' stroke-width='12' stroke-linecap='round'/%3E%3Ccircle cx='694' cy='164' r='16' fill='%23fff' opacity='.9'/%3E%3Ccircle cx='718' cy='204' r='16' fill='%23fff' opacity='.9'/%3E%3Cpath d='M344 188 C388 128 478 132 514 194 S590 244 630 178' stroke='%2316a085' stroke-width='20' fill='none' opacity='.9'/%3E%3Ccircle cx='430' cy='210' r='22' fill='%23e35d5b'/%3E%3C/svg%3E");
+      background-size: cover;
+      background-position: center;
+    }
+
+    .hero-card.badminton {
+      background:
+        linear-gradient(120deg, rgba(16, 72, 52, .36), rgba(110, 198, 216, .14)),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='420' viewBox='0 0 900 420'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1' y1='0' y2='1'%3E%3Cstop stop-color='%231f8f5f'/%3E%3Cstop offset='1' stop-color='%236ec6d8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='900' height='420' fill='url(%23g)'/%3E%3Cpath d='M130 318 L780 318' stroke='%23fff' stroke-width='12' opacity='.7'/%3E%3Cpath d='M450 68 V334' stroke='%23fff' stroke-width='8' opacity='.7'/%3E%3Cpath d='M160 118 H820 M160 220 H820' stroke='%23fff' stroke-width='5' opacity='.26'/%3E%3Ccircle cx='280' cy='158' r='52' fill='none' stroke='%23f8f5e9' stroke-width='14'/%3E%3Cpath d='M316 192 L410 286' stroke='%23f8f5e9' stroke-width='18' stroke-linecap='round'/%3E%3Cpath d='M610 96 L704 236 L548 236 Z' fill='%23fff' opacity='.9'/%3E%3Cpath d='M610 96 L626 236 M642 126 L652 236 M674 176 L674 236' stroke='%2317201d' stroke-width='5' opacity='.3'/%3E%3Ccircle cx='610' cy='96' r='18' fill='%23f4b740'/%3E%3C/svg%3E");
+      background-size: cover;
+      background-position: center;
+    }
+
+    .hero-card h2 {
+      margin: 0 0 8px;
+      font-size: 23px;
+      letter-spacing: 0;
+      line-height: 1.2;
+    }
+
+    .hero-card p {
+      margin: 0;
+      font-size: 13px;
+      opacity: .92;
+    }
+
+    .carousel {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .carousel-track {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding-bottom: 2px;
+      scroll-behavior: smooth;
+    }
+
+    .carousel-track::-webkit-scrollbar { height: 0; }
+
+    .carousel .hero-card {
+      min-width: 100%;
+      scroll-snap-align: start;
+      margin-bottom: 0;
+    }
+
+    .dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 18px;
+      height: 4px;
+      border-radius: 999px;
+      background: #d8d4cb;
+      padding: 0;
+    }
+
+    .dot.active { background: var(--brand); }
+
+    .recommend-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .recommend-tile {
+      min-height: 86px;
+      border-radius: 10px;
+      padding: 12px;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: linear-gradient(135deg, #126f61, #16a085);
+      overflow: hidden;
+      text-align: left;
+    }
+
+    .recommend-tile:nth-child(2) { background: linear-gradient(135deg, #d9901d, #f4b740); }
+    .recommend-tile:nth-child(3) { background: linear-gradient(135deg, #336fb8, #6ec6d8); }
+    .recommend-tile:nth-child(4) { background: linear-gradient(135deg, #b94e50, #e38b5d); }
+    .recommend-tile:nth-child(5) { background: linear-gradient(135deg, #385448, #91b36f); }
+    .recommend-tile:nth-child(6) { background: linear-gradient(135deg, #4b6676, #8ba6b4); }
+
+    .recommend-tile b {
+      font-size: 15px;
+      line-height: 1.25;
+    }
+
+    .recommend-tile span {
+      font-size: 11px;
+      opacity: .9;
+    }
+
+    .chips {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      margin-bottom: 14px;
+    }
+
+    .chips::-webkit-scrollbar { height: 0; }
+    .chip {
+      flex: 0 0 auto;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: var(--surface);
+      color: #34403b;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .chip.active {
+      border-color: rgba(22, 160, 133, .4);
+      background: var(--surface-2);
+      color: var(--brand-dark);
+      font-weight: 700;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 14px 0 10px;
+    }
+
+    .section-title h3 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    .section-title span,
+    .link {
+      color: var(--brand-dark);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .activity {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr);
+      gap: 12px;
+      padding: 10px;
+      min-height: 154px;
+      text-align: left;
+    }
+
+    .more-activity,
+    .activity-card.hidden-card {
+      display: none;
+    }
+
+    .cover {
+      height: 132px;
+      border-radius: 8px;
+      background: linear-gradient(140deg, #16a085, #f4b740);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 900;
+      font-size: 22px;
+    }
+
+    .cover.alt { background: linear-gradient(140deg, #3b7ddd, #e35d5b); }
+    .cover.sport { background: linear-gradient(140deg, #1f8f5f, #6ec6d8); }
+
+    .cover.party { background: linear-gradient(140deg, #7a5bd8, #f4b740); }
+
+    .sort-bar {
+      position: sticky;
+      top: -16px;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      background: rgba(250, 249, 246, .96);
+      padding: 8px 0;
+      margin-bottom: 8px;
+    }
+
+    .sort-bar button {
+      height: 32px;
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .sort-bar button.active {
+      color: var(--brand-dark);
+      border-color: rgba(22, 160, 133, .42);
+      background: var(--surface-2);
+    }
+
+    .sort-arrow {
+      display: inline-block;
+      width: 10px;
+      margin-left: 2px;
+      color: var(--brand-dark);
+      font-size: 10px;
+    }
+
+    .list-note {
+      color: var(--muted);
+      font-size: 12px;
+      margin: -4px 0 10px;
+    }
+
+    .load-more {
+      width: 100%;
+      height: 42px;
+      border-radius: 8px;
+      background: #fff;
+      border: 1px dashed #c9c3b6;
+      color: var(--muted);
+      font-weight: 800;
+      margin: 4px 0 10px;
+    }
+
+    .activity h4,
+    .person h4,
+    .message h4 {
+      margin: 0 0 6px;
+      font-size: 15px;
+      line-height: 1.3;
+      letter-spacing: 0;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .price {
+      color: var(--danger);
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .tag {
+      padding: 4px 7px;
+      border-radius: 6px;
+      background: #f3f1ea;
+      color: #59645f;
+      font-size: 11px;
+      line-height: 1;
+    }
+
+    .tag.green {
+      background: #e7f5ef;
+      color: var(--brand-dark);
+    }
+
+    .primary,
+    .secondary,
+    .danger {
+      height: 42px;
+      border-radius: 8px;
+      padding: 0 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .primary {
+      background: var(--brand);
+      color: #fff;
+    }
+
+    .secondary {
+      background: #fff;
+      border: 1px solid var(--line);
+      color: #25302c;
+    }
+
+    .danger {
+      background: #fff1ef;
+      color: var(--danger);
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      background: #ebe8df;
+      padding: 4px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      gap: 4px;
+    }
+
+    .segmented button {
+      height: 34px;
+      border-radius: 7px;
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .segmented button.active {
+      background: #fff;
+      color: var(--ink);
+      box-shadow: 0 2px 8px rgba(23, 32, 29, .08);
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      margin-bottom: 12px;
+    }
+
+    .filter-row::-webkit-scrollbar { height: 0; }
+
+    .person {
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 54px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: linear-gradient(140deg, #16a085, #f4b740);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+    }
+
+    .avatar.small {
+      width: 38px;
+      height: 38px;
+      font-size: 13px;
+    }
+
+    .avatar.blue { background: linear-gradient(140deg, #3b7ddd, #6ec6d8); }
+    .avatar.red { background: linear-gradient(140deg, #e35d5b, #f4b740); }
+
+    .photo-strip {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 8px;
+      margin: 10px 0 0;
+    }
+
+    .photo {
+      min-height: 78px;
+      border-radius: 8px;
+      background:
+        linear-gradient(145deg, rgba(23, 32, 29, .12), rgba(23, 32, 29, .02)),
+        linear-gradient(135deg, #16a085, #f4b740);
+      display: flex;
+      align-items: end;
+      padding: 8px;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      text-align: left;
+    }
+
+    .photo:first-child {
+      grid-row: span 2;
+      min-height: 164px;
+    }
+
+    .photo.alt { background: linear-gradient(135deg, #3b7ddd, #6ec6d8); }
+    .photo.warm { background: linear-gradient(135deg, #e35d5b, #f4b740); }
+    .photo.deep { background: linear-gradient(135deg, #34403b, #91b36f); }
+
+    .follow {
+      min-width: 58px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--brand);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .follow.on {
+      background: #eef1ed;
+      color: #5e6963;
+    }
+
+    .message {
+      display: grid;
+      grid-template-columns: 46px minmax(0, 1fr);
+      gap: 10px;
+      padding: 12px;
+      text-align: left;
+      align-items: center;
+      min-height: 76px;
+    }
+
+    .message-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .message-card {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      text-align: left;
+    }
+
+    .message-main {
+      min-width: 0;
+    }
+
+    .message-main h4 {
+      margin: 0 0 5px;
+      font-size: 15px;
+    }
+
+    .message-main p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .message-side {
+      display: grid;
+      justify-items: end;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .badge {
+      min-width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: var(--danger);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      padding: 0 5px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .notice-dot {
+      min-width: 8px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--danger);
+      margin-top: 5px;
+    }
+
+    .profile-head {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .profile-cover {
+      height: 112px;
+      margin: -18px -18px 12px;
+      border-radius: 12px 12px 0 0;
+      background: linear-gradient(135deg, #16a085, #f4b740);
+    }
+
+    .profile-head .avatar {
+      margin: 0 auto 10px;
+      width: 76px;
+      height: 76px;
+      font-size: 24px;
+    }
+
+    .profile-head h2 {
+      margin: 0 0 6px;
+      font-size: 21px;
+      letter-spacing: 0;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .stat {
+      background: #f7f5ef;
+      border-radius: 8px;
+      padding: 10px 4px;
+      text-align: center;
+    }
+
+    .stat b { display: block; font-size: 17px; }
+    .stat span { color: var(--muted); font-size: 11px; }
+
+    .info-block {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .info-block h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+
+    .info-block p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 48px;
+      border-bottom: 1px solid var(--line);
+      font-size: 15px;
+    }
+
+    .list-item:last-child { border-bottom: 0; }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .menu-item {
+      min-height: 76px;
+      border-radius: 10px;
+      background: #f7f5ef;
+      border: 1px solid #ebe7dd;
+      display: grid;
+      place-items: center;
+      gap: 6px;
+      padding: 10px 4px;
+      color: #34403b;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .menu-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      background: #e7f5ef;
+      color: var(--brand-dark);
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+    }
+
+    .host-panel {
+      background: linear-gradient(135deg, #17342f, #16a085);
+      color: #fff;
+      border: 0;
+    }
+
+    .host-panel p,
+    .host-panel .meta {
+      color: rgba(255, 255, 255, .82);
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .metric {
+      background: rgba(255, 255, 255, .14);
+      border-radius: 8px;
+      padding: 10px 4px;
+      text-align: center;
+    }
+
+    .metric b {
+      display: block;
+      font-size: 17px;
+    }
+
+    .metric span {
+      font-size: 11px;
+      opacity: .86;
+    }
+
+    .auth-card {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .auth-logo {
+      width: 68px;
+      height: 68px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #16a085, #f4b740);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 28px;
+      font-weight: 900;
+    }
+
+    .auth-title h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      letter-spacing: 0;
+    }
+
+    .auth-title p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .bottom-nav {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 74px;
+      background: rgba(255, 255, 255, .96);
+      border-top: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      padding-bottom: 8px;
+      z-index: 30;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .nav-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 7px;
+      border: 2px solid currentColor;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      line-height: 1;
+    }
+
+    .nav-item.active {
+      color: var(--brand-dark);
+    }
+
+    .backbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .backbar h2 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+
+    .large-cover {
+      height: 190px;
+      border-radius: 12px;
+      background: linear-gradient(140deg, #16a085, #f4b740);
+      display: flex;
+      align-items: end;
+      padding: 16px;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+
+    .large-cover h1 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .sticky-action {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 74px;
+      background: rgba(255, 255, 255, .96);
+      border-top: 1px solid var(--line);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      z-index: 20;
+    }
+
+    .form {
+      display: grid;
+      gap: 12px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+      font: inherit;
+      color: var(--ink);
+    }
+
+    textarea {
+      min-height: 82px;
+      resize: none;
+    }
+
+    .stepper {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .step {
+      height: 6px;
+      border-radius: 6px;
+      background: #dedbd2;
+    }
+
+    .step.active { background: var(--brand); }
+
+    .sheet,
+    .toast {
+      position: absolute;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      display: none;
+    }
+
+    .sheet.open,
+    .toast.open { display: block; }
+
+    .sheet {
+      bottom: 0;
+      max-height: 78%;
+      overflow-y: auto;
+      background: #fff;
+      border-radius: 18px 18px 0 0;
+      padding: 16px 16px 26px;
+      box-shadow: 0 -16px 40px rgba(23, 32, 29, .18);
+      border-top: 1px solid var(--line);
+    }
+
+    .sheet-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .sheet-head h3 { margin: 0; font-size: 18px; }
+
+    .toast {
+      top: 42px;
+      padding: 0 16px;
+      pointer-events: none;
+    }
+
+    .toast-inner {
+      background: rgba(23, 32, 29, .92);
+      color: #fff;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .chat {
+      display: grid;
+      gap: 10px;
+    }
+
+    .bubble {
+      max-width: 78%;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 13px;
+      line-height: 1.5;
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+
+    .bubble.me {
+      justify-self: end;
+      background: #dff4ed;
+      border-color: #c9eadf;
+    }
+
+    .chat-input {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 74px;
+      background: #fff;
+      border-top: 1px solid var(--line);
+      padding: 10px 16px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      z-index: 20;
+    }
+
+    .empty {
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    @media (max-width: 860px) {
+      body { padding: 12px; align-items: start; }
+      .workspace { grid-template-columns: 1fr; }
+      .brief { order: 2; }
+      .phone { width: min(390px, 100%); }
+    }
+  </style>
+</head>
+<body>
+  <main class="workspace">
+    <aside class="brief">
+      <h1>游戏交友 App MVP 交互原型</h1>
+      <p>第一版可点击原型，用于讲解产品结构和核心流程。用户与主理人在同一个 App 内，主理人申请通过后获得发布活动能力。</p>
+      <p>演示顺序：先看首页活动报名，再看局友筛选和关注，然后进入消息群聊，最后演示主理人申请与发布活动。</p>
+      <ul>
+        <li>首页：推荐活动 + 活动列表 + 活动筛选</li>
+        <li>局友：筛选用户 / 主理人，查看主页，关注</li>
+        <li>消息：活动群聊和系统通知</li>
+        <li>活动：我参与的 / 我发布的</li>
+        <li>我的：资料、关注、订单、主理人申请</li>
+      </ul>
+    </aside>
+
+    <section class="phone" aria-label="App prototype">
+      <div class="status"><span>9:41</span><span>5G 100%</span></div>
+      <div class="app">
+        <section class="screen" id="login">
+          <div class="auth-card">
+            <div class="auth-logo">局</div>
+            <div class="auth-title">
+              <h1>登录后继续</h1>
+              <p>搜索活动、查看详情、找局友、进入消息和管理活动都需要登录。第一版原型可用演示登录直接进入。</p>
+            </div>
+            <div class="form">
+              <label>手机号<input value="138 0000 8888"></label>
+              <label>验证码<input value="123456"></label>
+              <button class="primary" data-login>登录</button>
+              <button class="secondary" data-screen="register">注册新账号</button>
+              <button class="secondary" data-screen="home">先看看首页</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="register">
+          <div class="backbar"><button class="icon-btn" data-screen="login">←</button><h2>注册</h2></div>
+          <div class="form">
+            <label>手机号<input placeholder="请输入手机号"></label>
+            <label>验证码<input placeholder="请输入验证码"></label>
+            <label>昵称<input placeholder="例如：一颗骰子"></label>
+            <label>城市<input value="成都"></label>
+            <label>兴趣偏好<select><option>桌游 / 狼人杀</option><option>Switch / 派对游戏</option><option>羽毛球 / 轻运动</option></select></label>
+            <button class="primary" data-login>注册并登录</button>
+            <button class="secondary" data-screen="login">已有账号，去登录</button>
+          </div>
+        </section>
+
+        <section class="screen active" id="home">
+          <div class="topbar">
+            <div class="city">成都</div>
+            <button class="search" data-screen="search">搜索活动 / 游戏 / 主理人</button>
+            <button class="icon-btn" data-sheet="activity-filter" aria-label="筛选活动">筛</button>
+          </div>
+
+          <div class="carousel" aria-label="推荐活动轮播">
+            <div class="carousel-track">
+              <button class="hero-card werewolf" data-screen="activity-detail">
+                <h2>周五狼人杀新手局</h2>
+                <p>今晚 19:30｜锦江区｜8/12 人已报名｜主理人带玩</p>
+              </button>
+              <button class="hero-card switch" data-screen="activity-detail">
+                <h2>Switch 马里奥派对</h2>
+                <p>周六 15:00｜太古里｜低压力破冰｜含饮品</p>
+              </button>
+              <button class="hero-card badminton" data-screen="activity-detail">
+                <h2>羽毛球新手搭子局</h2>
+                <p>周末下午｜高新区｜10/16 人｜运动后自由交流</p>
+              </button>
+            </div>
+            <div class="dots">
+              <button class="dot active" data-carousel-dot="0" aria-label="第 1 张推荐"></button>
+              <button class="dot" data-carousel-dot="1" aria-label="第 2 张推荐"></button>
+              <button class="dot" data-carousel-dot="2" aria-label="第 3 张推荐"></button>
+            </div>
+          </div>
+
+          <div class="section-title">
+            <h3>推荐频道</h3>
+            <span>按场景找局</span>
+          </div>
+          <div class="recommend-grid">
+            <button class="recommend-tile" data-preset="tonight"><b>今晚可参加</b><span>下班后可直接到场</span></button>
+            <button class="recommend-tile" data-preset="hot-week"><b>本周热门</b><span>报名增长最快</span></button>
+            <button class="recommend-tile" data-preset="beginner"><b>新手友好</b><span>不会玩也能加入</span></button>
+            <button class="recommend-tile" data-preset="host"><b>主理人推荐</b><span>稳定控场的优质局</span></button>
+            <button class="recommend-tile" data-preset="nearby-hot"><b>附近高报名</b><span>3km 内快成局</span></button>
+            <button class="recommend-tile" data-preset="featured"><b>平台精选</b><span>低尴尬社交场</span></button>
+          </div>
+
+          <div class="chips">
+            <button class="chip active" data-quick-filter="all">推荐</button>
+            <button class="chip" data-quick-filter="tonight">今晚</button>
+            <button class="chip" data-quick-filter="weekend">周末</button>
+            <button class="chip" data-quick-filter="桌游">桌游</button>
+            <button class="chip" data-quick-filter="狼人杀">狼人杀</button>
+            <button class="chip" data-quick-filter="Switch">Switch</button>
+            <button class="chip" data-quick-filter="运动">运动</button>
+          </div>
+
+          <div class="section-title">
+            <h3 id="activity-list-title">活动列表</h3>
+            <button class="link" data-sheet="activity-filter">筛选</button>
+          </div>
+          <div class="list-note" id="activity-list-note">推荐活动优先展示，支持按时间、距离、热度、价格排序。</div>
+          <div class="sort-bar">
+            <button class="active" data-sort="time">时间<span class="sort-arrow">↓</span></button>
+            <button data-sort="distance">距离<span class="sort-arrow"></span></button>
+            <button data-sort="hot">热度<span class="sort-arrow"></span></button>
+            <button data-sort="price">价格<span class="sort-arrow"></span></button>
+          </div>
+
+          <div id="activity-list">
+            <button class="card activity activity-card" data-screen="activity-detail" data-time="today" data-week="week" data-type="狼人杀" data-tags="新手友好,轻松局,含饮品,主理人带玩" data-distance="1.8" data-hot="96" data-price="39" data-start="202605211930" data-host-score="4.9" data-featured="true">
+              <div class="cover">狼</div>
+              <div>
+                <h4>周五狼人杀新手局</h4>
+                <div class="meta">今晚 19:30-22:00｜锦江区春熙路桌游店｜1.8km<br>8/12 人｜已成局｜主理人 阿哲｜评分 4.9</div>
+                <div class="tags"><span class="tag green">新手友好</span><span class="tag">轻松局</span><span class="tag">含饮品</span></div>
+                <div class="row"><span class="price">¥39</span><span class="meta">剩 4 位｜热度 96</span></div>
+              </div>
+            </button>
+
+            <button class="card activity activity-card" data-screen="activity-detail" data-time="tomorrow" data-week="week" data-type="桌游" data-tags="主理人带玩,含饮品,聊天友好,新手友好" data-distance="2.4" data-hot="88" data-price="49" data-start="202605222000" data-host-score="4.8" data-featured="true">
+              <div class="cover alt">桌</div>
+              <div>
+                <h4>下班后桌游认识新朋友</h4>
+                <div class="meta">明天 20:00-22:00｜太古里咖啡空间｜2.4km<br>5/8 人｜快成局｜主理人 小林｜评分 4.8</div>
+                <div class="tags"><span class="tag green">主理人带玩</span><span class="tag">含饮品</span><span class="tag">聊天友好</span></div>
+                <div class="row"><span class="price">¥49</span><span class="meta">差 1 人成局｜热度 88</span></div>
+              </div>
+            </button>
+
+            <button class="card activity activity-card" data-screen="activity-detail" data-time="weekend" data-week="week" data-type="运动" data-tags="不限经验,轻运动,女生友好" data-distance="3.1" data-hot="82" data-price="35" data-start="202605231500" data-host-score="4.7" data-featured="false">
+              <div class="cover sport">羽</div>
+              <div>
+                <h4>周末羽毛球搭子局</h4>
+                <div class="meta">周六 15:00-17:00｜高新区运动馆｜3.1km<br>10/16 人｜已成局｜主理人 米米｜评分 4.7</div>
+                <div class="tags"><span class="tag green">不限经验</span><span class="tag">轻运动</span><span class="tag">女生友好</span></div>
+                <div class="row"><span class="price">¥35</span><span class="meta">剩 6 位｜热度 82</span></div>
+              </div>
+            </button>
+
+            <button class="card activity activity-card more-activity" data-screen="activity-detail" data-time="weekend" data-week="week" data-type="派对游戏" data-tags="轻松聊天,平台精选,下班后,新手友好" data-distance="4.2" data-hot="91" data-price="59" data-start="202605231930" data-host-score="4.8" data-featured="true">
+              <div class="cover party">派</div>
+              <div>
+                <h4>周六破冰派对游戏局</h4>
+                <div class="meta">周六 19:30-22:00｜武侯区派对空间｜4.2km<br>9/14 人｜快满员｜主理人 可可｜评分 4.8</div>
+                <div class="tags"><span class="tag green">轻松聊天</span><span class="tag">平台精选</span><span class="tag">下班后</span></div>
+                <div class="row"><span class="price">¥59</span><span class="meta">剩 5 位｜热度 91</span></div>
+              </div>
+            </button>
+            <button class="card activity activity-card more-activity" data-screen="activity-detail" data-time="weekend" data-week="week" data-type="Switch" data-tags="合作类,低压力,可候补,新手友好" data-distance="5.6" data-hot="79" data-price="45" data-start="202605241400" data-host-score="4.6" data-featured="false">
+              <div class="cover alt">S</div>
+              <div>
+                <h4>Switch 合作闯关局</h4>
+                <div class="meta">周日 14:00-17:00｜青羊区游戏空间｜5.6km<br>4/6 人｜快成局｜主理人 南风｜评分 4.6</div>
+                <div class="tags"><span class="tag green">合作类</span><span class="tag">低压力</span><span class="tag">可候补</span></div>
+                <div class="row"><span class="price">¥45</span><span class="meta">剩 2 位｜热度 79</span></div>
+              </div>
+            </button>
+            <div class="empty" id="activity-empty" style="display:none">没有符合条件的活动，换个筛选条件试试。</div>
+          </div>
+          <button class="load-more" data-load-more>上拉加载更多活动</button>
+        </section>
+
+        <section class="screen" id="buddies">
+          <div class="topbar">
+            <button class="search">搜索主理人 / 局友 / 游戏</button>
+            <button class="icon-btn" data-sheet="buddy-filter" aria-label="筛选局友">筛</button>
+          </div>
+          <div class="segmented">
+            <button class="active" data-buddy-tab="hosts">主理人</button>
+            <button data-buddy-tab="players">局友</button>
+          </div>
+          <div class="filter-row">
+            <button class="chip active">成都</button>
+            <button class="chip">擅长游戏</button>
+            <button class="chip">评分 4.8+</button>
+            <button class="chip">本周有局</button>
+            <button class="chip" data-sheet="buddy-filter">更多筛选</button>
+          </div>
+
+          <div id="hosts-list">
+            <div class="card person" data-screen="host-profile">
+              <div class="avatar red">哲</div>
+              <div>
+                <h4>阿哲｜狼人杀主理人</h4>
+                <div class="meta">成都锦江｜主持 18 场｜评分 4.9｜本周 2 场活动</div>
+                <div class="tags"><span class="tag green">新手友好</span><span class="tag">推理控</span><span class="tag">控场稳定</span></div>
+              </div>
+              <button class="follow" data-follow>关注</button>
+            </div>
+            <div class="card person" data-screen="host-profile">
+              <div class="avatar">林</div>
+              <div>
+                <h4>小林｜桌游主理人</h4>
+                <div class="meta">太古里｜主持 12 场｜评分 4.8｜常办轻松局</div>
+                <div class="tags"><span class="tag green">气氛稳定</span><span class="tag">桌游</span><span class="tag">破冰</span></div>
+              </div>
+              <button class="follow" data-follow>关注</button>
+            </div>
+            <div class="card person" data-screen="host-profile">
+              <div class="avatar blue">米</div>
+              <div>
+                <h4>米米｜轻运动主理人</h4>
+                <div class="meta">高新区｜主持 9 场｜评分 4.7｜羽毛球 / 飞盘</div>
+                <div class="tags"><span class="tag green">女生友好</span><span class="tag">轻运动</span><span class="tag">周末</span></div>
+              </div>
+              <button class="follow" data-follow>关注</button>
+            </div>
+          </div>
+
+          <div id="players-list" style="display:none">
+            <div class="card person" data-screen="user-profile">
+              <div class="avatar">夏</div>
+              <div>
+                <h4>夏天｜25｜成都</h4>
+                <div class="meta">锦江｜想找周末桌游搭子｜工作日晚 / 周末活跃</div>
+                <div class="tags"><span class="tag green">桌游</span><span class="tag">狼人杀</span><span class="tag">周末</span></div>
+              </div>
+              <button class="follow" data-follow>关注</button>
+            </div>
+            <div class="card person" data-screen="user-profile">
+              <div class="avatar blue">南</div>
+              <div>
+                <h4>南风｜28｜成都</h4>
+                <div class="meta">青羊｜下班后 Switch 和轻运动｜想认识稳定局友</div>
+                <div class="tags"><span class="tag green">Switch</span><span class="tag">羽毛球</span></div>
+              </div>
+              <button class="follow" data-follow>关注</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="messages">
+          <div class="section-title"><h3>消息</h3><span>活动沟通优先</span></div>
+          <div class="chips">
+            <button class="chip active">全部</button>
+            <button class="chip">活动群</button>
+            <button class="chip">通知</button>
+            <button class="chip">主理人</button>
+          </div>
+          <div class="message-list">
+            <button class="card message-card" data-screen="chat">
+              <div class="avatar small red">狼</div>
+              <div class="message-main">
+                <h4>周五狼人杀新手局</h4>
+                <p>阿哲：今晚 19:20 可以提前到，先做破冰。</p>
+              </div>
+              <div class="message-side"><span>18:42</span><span class="badge">3</span></div>
+            </button>
+            <button class="card message-card" data-screen="notifications">
+              <div class="avatar small">通</div>
+              <div class="message-main">
+                <h4>系统通知</h4>
+                <p>报名成功、活动提醒、主理人申请状态都在这里。</p>
+              </div>
+              <div class="message-side"><span>今天</span><span class="badge">2</span></div>
+            </button>
+            <button class="card message-card" data-screen="manage-event">
+              <div class="avatar small blue">主</div>
+              <div class="message-main">
+                <h4>主理人待办</h4>
+                <p>有 2 位报名用户等待审批，活动开始前请处理。</p>
+              </div>
+              <div class="message-side"><span>待办</span><span class="badge">2</span></div>
+            </button>
+          </div>
+          <div class="info-block">
+            <h3>私信暂未开放</h3>
+            <p>第一版先通过活动群建立联系，降低陌生人骚扰风险。同场活动后可在后续版本开放私信。</p>
+          </div>
+        </section>
+
+        <section class="screen" id="events">
+          <div class="section-title"><h3>活动</h3><span>履约中心</span></div>
+          <div class="segmented">
+            <button class="active" data-event-tab="joined">我参与的</button>
+            <button data-event-tab="published">我发布的</button>
+          </div>
+          <div id="joined-events">
+            <div class="chips">
+              <button class="chip active">待开始</button>
+              <button class="chip">已结束</button>
+              <button class="chip">已取消</button>
+            </div>
+            <div class="card activity">
+              <div class="cover">狼</div>
+              <div>
+                <h4>周五狼人杀新手局</h4>
+                <div class="meta">今晚 19:30｜锦江区春熙路桌游店<br>状态：已报名</div>
+                <div class="row">
+                  <button class="secondary" data-screen="chat">进群</button>
+                  <button class="secondary" data-screen="activity-detail">详情</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="published-events" style="display:none">
+            <button class="primary" style="width:100%; margin-bottom:12px" data-screen="publish-template">发布活动</button>
+            <div class="info-block host-panel">
+              <h3>主理人工作台</h3>
+              <p>管理发布、报名审批、现场通知、收入和历史活动。</p>
+              <div class="metric-grid">
+                <div class="metric"><b>2</b><span>招募中</span></div>
+                <div class="metric"><b>¥428</b><span>待结算</span></div>
+                <div class="metric"><b>18</b><span>历史场次</span></div>
+              </div>
+              <div class="row">
+                <button class="secondary" data-screen="host-income">收入</button>
+                <button class="secondary" data-screen="host-history">历史活动</button>
+              </div>
+            </div>
+            <div class="chips">
+              <button class="chip active">招募中</button>
+              <button class="chip">待审批</button>
+              <button class="chip">待开始</button>
+              <button class="chip">已结束</button>
+              <button class="chip">草稿</button>
+            </div>
+            <div class="card activity">
+              <div class="cover alt">桌</div>
+              <div>
+                <h4>下班后桌游认识新朋友</h4>
+                <div class="meta">明天 20:00｜5/8 人报名｜2 人待审批<br>预计收入 ¥245｜状态：招募中</div>
+                <div class="row">
+                  <button class="secondary" data-screen="manage-event">管理</button>
+                  <button class="secondary" data-screen="member-approval">审批</button>
+                  <button class="secondary" data-screen="chat">进群</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="mine">
+          <div class="profile-head">
+            <div class="profile-cover"></div>
+            <div class="avatar">我</div>
+            <h2>一颗骰子</h2>
+            <div class="meta">成都｜桌游 / 狼人杀 / 羽毛球｜找搭子</div>
+            <div class="tags" style="justify-content:center"><span class="tag green">新手友好</span><span class="tag">周末活跃</span><span class="tag">轻运动</span></div>
+            <div class="stats">
+              <div class="stat"><b>12</b><span>关注</span></div>
+              <div class="stat"><b>8</b><span>粉丝</span></div>
+              <div class="stat"><b>3</b><span>活动</span></div>
+            </div>
+            <div class="row">
+              <button class="secondary" data-screen="edit-profile">编辑资料</button>
+              <button class="primary" data-screen="user-profile">个人主页</button>
+            </div>
+          </div>
+          <div class="info-block">
+            <h3>主理人状态</h3>
+            <p>通过申请后，你可以发布活动。第一版主理人和普通用户在同一个 App 内。</p>
+            <div class="row"><button class="primary" data-screen="host-apply">申请成为主理人</button></div>
+          </div>
+          <div class="info-block">
+            <h3>本周状态</h3>
+            <div class="stats">
+              <div class="stat"><b>1</b><span>待参加</span></div>
+              <div class="stat"><b>2</b><span>关注主理人</span></div>
+              <div class="stat"><b>39</b><span>待支付</span></div>
+            </div>
+          </div>
+          <div class="info-block">
+            <h3>常用功能</h3>
+            <div class="menu-grid">
+              <button class="menu-item" data-screen="edit-profile"><span class="menu-icon">资</span><span>编辑资料</span></button>
+              <button class="menu-item" data-screen="follows"><span class="menu-icon">关</span><span>我的关注</span></button>
+              <button class="menu-item" data-screen="orders"><span class="menu-icon">单</span><span>我的订单</span></button>
+              <button class="menu-item" data-screen="reviews"><span class="menu-icon">评</span><span>我的评价</span></button>
+              <button class="menu-item" data-screen="host-apply"><span class="menu-icon">主</span><span>主理人</span></button>
+              <button class="menu-item"><span class="menu-icon">客</span><span>客服</span></button>
+              <button class="menu-item"><span class="menu-icon">举</span><span>举报反馈</span></button>
+              <button class="menu-item" data-screen="settings"><span class="menu-icon">设</span><span>设置</span></button>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="activity-detail">
+          <div class="backbar"><button class="icon-btn" data-back>←</button><h2>活动详情</h2></div>
+          <div class="large-cover"><h1>周五狼人杀新手局</h1></div>
+          <div class="tags"><span class="tag green">新手友好</span><span class="tag">主理人带玩</span><span class="tag">轻松破冰</span></div>
+          <div class="info-block">
+            <h3>现场照片</h3>
+            <div class="photo-strip">
+              <div class="photo">桌游店包间</div>
+              <div class="photo alt">游戏道具</div>
+              <div class="photo warm">饮品小食</div>
+              <div class="photo deep">往期现场</div>
+              <div class="photo">破冰卡</div>
+            </div>
+          </div>
+          <div class="info-block">
+            <h3>活动信息</h3>
+            <p>时间：今晚 19:30-22:00<br>地点：锦江区春熙路桌游店<br>人数：8/12 人<br>费用：¥39，含场地、基础饮品和道具。</p>
+          </div>
+          <button class="card person" data-screen="host-profile">
+            <div class="avatar red">哲</div>
+            <div>
+              <h4>主理人 阿哲</h4>
+              <div class="meta">主持 18 场｜擅长新手教学和轻松控场</div>
+            </div>
+            <span class="link">主页</span>
+          </button>
+          <div class="info-block">
+            <h3>活动介绍</h3>
+            <p>这是一场适合新手的狼人杀社交局。主理人会先讲规则，再安排破冰，尽量让每个人都有参与感。不会玩也可以来，重点是轻松认识新朋友。</p>
+          </div>
+          <div class="info-block">
+            <h3>活动流程</h3>
+            <p>19:20 签到入场<br>19:30 破冰和规则说明<br>20:00 正式游戏<br>21:40 自由交流和复盘</p>
+          </div>
+          <div class="info-block">
+            <h3>已报名</h3>
+            <div class="row" style="justify-content:flex-start">
+              <div class="avatar small">夏</div><div class="avatar small blue">南</div><div class="avatar small red">哲</div><div class="avatar small">+5</div>
+            </div>
+          </div>
+          <div class="info-block">
+            <h3>退款规则</h3>
+            <p>活动开始前 24 小时可申请退款。24 小时内不支持退款。主理人取消活动时全额退款。</p>
+          </div>
+          <div class="sticky-action">
+            <span class="price">¥39</span>
+            <button class="primary" data-screen="signup">立即报名</button>
+          </div>
+        </section>
+
+        <section class="screen" id="signup">
+          <div class="backbar"><button class="icon-btn" data-back>←</button><h2>确认报名</h2></div>
+          <div class="info-block">
+            <h3>周五狼人杀新手局</h3>
+            <p>今晚 19:30｜锦江区春熙路桌游店<br>单人报名｜¥39</p>
+          </div>
+          <div class="info-block">
+            <h3>报名须知</h3>
+            <p>请准时到场，尊重其他参与者。报名成功后会自动进入活动群。第一版暂不支持多人代报名。</p>
+          </div>
+          <button class="primary" style="width:100%" data-screen="pay-success">确认支付 ¥39</button>
+        </section>
+
+        <section class="screen" id="pay-success">
+          <div class="empty">
+            <h2>报名成功</h2>
+            <p>你已加入“周五狼人杀新手局”。可以先进入活动群，看主理人公告和到场提醒。</p>
+            <button class="primary" data-screen="chat">进入活动群</button>
+            <button class="secondary" style="margin-top:10px" data-tab="events">查看我的活动</button>
+          </div>
+        </section>
+
+        <section class="screen" id="chat">
+          <div class="backbar"><button class="icon-btn" data-back>←</button><h2>活动群聊</h2></div>
+          <button class="info-block" data-screen="activity-detail">
+            <h3>周五狼人杀新手局</h3>
+            <p>今晚 19:30｜锦江区春熙路桌游店｜查看活动详情</p>
+          </button>
+          <div class="chat">
+            <div class="bubble">阿哲：大家好，今晚 19:20 可以提前到，我们会先做一个很轻的破冰。</div>
+            <div class="bubble">夏天：我是新手，请多关照。</div>
+            <div class="bubble me">我也是新手，刚好一起学。</div>
+            <div class="bubble">阿哲：没问题，我会先讲规则，不用担心。</div>
+          </div>
+          <div class="chat-input">
+            <input id="chat-input" placeholder="输入群消息">
+            <button class="primary" data-send-chat>发送</button>
+          </div>
+        </section>
+
+        <section class="screen" id="user-profile">
+          <div class="backbar"><button class="icon-btn" data-back>←</button><h2>局友主页</h2></div>
+          <div class="profile-head">
+            <div class="profile-cover"></div>
+            <div class="avatar">夏</div>
+            <h2>夏天</h2>
+            <div class="meta">25｜成都｜周末活跃</div>
+            <div class="tags" style="justify-content:center"><span class="tag green">桌游</span><span class="tag">狼人杀</span><span class="tag">推理</span></div>
+            <button class="follow" data-follow style="margin-top:12px">关注</button>
+          </div>
+          <div class="info-block">
+            <h3>个人介绍</h3>
+            <p>喜欢不太尴尬的线下局，桌游、狼人杀、合作类游戏都可以。想找周末稳定局友。</p>
+          </div>
+          <div class="info-block">
+            <h3>TA 想玩的局</h3>
+            <p>周末桌游、新手狼人杀、轻运动搭子局。</p>
+          </div>
+          <div class="info-block">
+            <h3>照片墙</h3>
+            <div class="photo-strip">
+              <div class="photo">桌游局</div>
+              <div class="photo alt">羽毛球</div>
+              <div class="photo warm">咖啡空间</div>
+              <div class="photo deep">Switch</div>
+              <div class="photo">活动合影</div>
+            </div>
+          </div>
+          <div class="info-block">
+            <h3>暂不支持私信</h3>
+            <p>第一版可以关注对方，后续通过共同参与活动建立联系。</p>
+          </div>
+        </section>
+
+        <section class="screen" id="host-profile">
+          <div class="backbar"><button class="icon-btn" data-back>←</button><h2>主理人主页</h2></div>
+          <div class="profile-head">
+            <div class="profile-cover"></div>
+            <div class="avatar red">哲</div>
+            <h2>阿哲</h2>
+            <div class="meta">狼人杀主理人｜主持 18 场</div>
+            <div class="tags" style="justify-content:center"><span class="tag green">新手友好</span><span class="tag">推理控</span><span class="tag">控场稳定</span></div>
+            <button class="follow" data-follow style="margin-top:12px">关注</button>
+          </div>
+          <div class="info-block">
+            <h3>正在发布</h3>
+            <button class="card activity" data-screen="activity-detail" style="margin:0">
+              <div class="cover">狼</div>
+              <div>
+                <h4>周五狼人杀新手局</h4>
+                <div class="meta">今晚 19:30｜8/12 人</div>
+                <div class="row"><span class="price">¥39</span><span class="link">查看</span></div>
+              </div>
+            </button>
+          </div>
+          <div class="info-block">
+            <h3>主理人介绍</h3>
+            <p>偏轻松局，会照顾新手体验，强调游戏过程中的互动和安全感。</p>
+          </div>
+          <div class="info-block">
+            <h3>往期照片</h3>
+            <div class="photo-strip">
+              <div class="photo">狼人杀现场</div>
+              <div class="photo alt">规则讲解</div>
+              <div class="photo warm">活动合影</div>
+              <div class="photo deep">破冰环节</div>
+              <div class="photo">场地环境</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="notifications">
+          <div class="backbar"><button class="icon-btn" data-back>←</button><h2>系统通知</h2></div>
+          <div class="card message"><div class="avatar small">付</div><div><h4>报名成功</h4><div class="meta">你已成功报名周五狼人杀新手局。</div></div></div>
+          <div class="card message"><div class="avatar small">审</div><div><h4>主理人申请</h4><div class="meta">你的申请已提交，等待审核。</div></div></div>
+        </section>
+
+        <section class="screen" id="manage-event">
+          <div class="backbar"><button class="icon-btn" data-back>←</button><h2>活动管理</h2></div>
+          <div class="info-block host-panel">
+            <h3>下班后桌游认识新朋友</h3>
+            <p>明天 20:00｜太古里咖啡空间<br>报名：5/8 人｜待审批：2 人｜状态：招募中</p>
+            <div class="metric-grid">
+              <div class="metric"><b>¥245</b><span>预计收入</span></div>
+              <div class="metric"><b>3</b><span>剩余名额</span></div>
+              <div class="metric"><b>88</b><span>热度</span></div>
+            </div>
+          </div>
+          <div class="info-block">
+            <h3>活动操作</h3>
+            <button class="list-item" data-screen="member-approval"><span>审批报名成员</span><span>2 人待处理 ></span></button>
+            <button class="list-item" data-screen="signup-users"><span>报名用户</span><span>5 人 ></span></button>
+            <button class="list-item" data-screen="chat"><span>进入活动群</span><span>></span></button>
+            <button class="list-item" data-toast="已发送活动提醒"><span>群发提醒</span><span>></span></button>
+            <button class="list-item" data-screen="edit-event"><span>编辑活动</span><span>></span></button>
+            <button class="list-item" data-screen="cancel-event"><span style="color:var(--danger)">取消活动</span><span>></span></button>
+          </div>
+          <div class="info-block">
+            <h3>主理人数据</h3>
+            <button class="list-item" data-screen="host-income"><span>活动收入</span><span>¥245 ></span></button>
+            <button class="list-item" data-screen="host-history"><span>历史活动</span><span>18 场 ></span></button>
+          </div>
+        </section>
+
+        <section class="screen" id="signup-users">
+          <div class="backbar"><button class="icon-btn" data-back>←</button><h2>报名用户</h2></div>
+          <div class="card person"><div class="avatar">夏</div><div><h4>夏天</h4><div class="meta">桌游 / 狼人杀｜已支付</div></div><span class="tag green">已报名</span></div>
+          <div class="card person"><div class="avatar blue">南</div><div><h4>南风</h4><div class="meta">Switch / 羽毛球｜已支付</div></div><span class="tag green">已报名</span></div>
+        </section>
+
+        <section class="screen" id="member-approval">
+          <div class="backbar"><button class="icon-btn" data-back>←</button><h2>成员审批</h2></div>
+          <div class="info-block">
+            <h3>待审批</h3>
+            <p>主理人可以根据活动氛围、人数结构和用户资料确认报名。审批通过后用户进入活动群。</p>
+          </div>
+          <div class="card person">
+            <div class="avatar">可</div>
+            <div><h4>可可｜26｜成都</h4><div class="meta">喜欢桌游和派对游戏｜报名留言：第一次参加，希望新手友好。</div></div>
+            <button class="follow" data-toast="已通过报名">通过</button>
+          </div>
+          <div class="card person">
+            <div class="avatar blue">陆</div>
+            <div><h4>陆离｜29｜成都</h4><div class="meta">历史参加 4 场｜守时评价好｜想找固定桌游局。</div></div>
+            <button class="follow" data-toast="已通过报名">通过</button>
+          </div>
+          <button class="danger" style="width:100%" data-toast="已拒绝所选报名">拒绝所选</button>
+        </section>
+
+        <section class="screen" id="edit-event">
+          <div class="backbar"><button class="icon-btn" data-back>←</button><h2>编辑活动</h2></div>
+          <div class="form">
+            <label>活动标题<input value="下班后桌游认识新朋友"></label>
+            <label>活动时间<input value="2026-05-22 20:00-22:00"></label>
+            <label>活动地点<select><option>太古里咖啡空间</option><option>锦江区春熙路桌游店</option><option>高新区运动馆</option></select></label>
+            <label>最大人数<input value="8"></label>
+            <label>报名价格<input value="49"></label>
+            <label>活动介绍<textarea>轻松桌游社交局，主理人会负责规则讲解和破冰。</textarea></label>
+            <button class="primary" data-toast="活动修改已保存">保存修改</button>
+          </div>
+        </section>
+
+        <section class="screen" id="cancel-event">
+          <div class="backbar"><button class="icon-btn" data-back>←</button><h2>取消活动</h2></div>
+          <div class="info-block">
+            <h3>取消前确认</h3>
+            <p>取消后会通知已报名用户，并按规则发起退款。频繁取消会影响主理人评分和流量推荐。</p>
+          </div>
+          <div class="form">
+            <label>取消原因<select><option>人数不足</option><option>场地临时不可用</option><option>主理人时间冲突</option><option>其他原因</option></select></label>
+            <label>补充说明<textarea placeholder="给用户说明情况"></textarea></label>
+            <button class="danger" data-toast="活动已取消，用户将收到通知">确认取消活动</button>
+          </div>
+        </section>
+
+        <section class="screen" id="host-income">
+          <div class="backbar"><button class="icon-btn" data-back>←</button><h2>活动收入</h2></div>
+          <div class="info-block host-panel">
+            <h3>本月收入</h3>
+            <div class="metric-grid">
+              <div class="metric"><b>¥1,862</b><span>总收入</span></div>
+              <div class="metric"><b>¥428</b><span>待结算</span></div>
+              <div class="metric"><b>6</b><span>完成场次</span></div>
+            </div>
+          </div>
+          <div class="info-block">
+            <button class="list-item"><span>下班后桌游认识新朋友</span><span>¥245</span></button>
+            <button class="list-item"><span>新手狼人杀局</span><span>¥468</span></button>
+            <button class="list-item"><span>Switch 派对局</span><span>¥312</span></button>
+          </div>
+        </section>
+
+        <section class="screen" id="host-history">
+          <div class="backbar"><button class="icon-btn" data-back>←</button><h2>历史活动</h2></div>
+          <div class="card activity">
+            <div class="cover">狼</div>
+            <div><h4>新手狼人杀局</h4><div class="meta">已结束｜12/12 人｜评分 4.9｜收入 ¥468</div><div class="row"><button class="secondary" data-screen="activity-detail">复用发布</button><button class="secondary" data-screen="host-income">收入</button></div></div>
+          </div>
+          <div class="card activity">
+            <div class="cover alt">桌</div>
+            <div><h4>轻松桌游交友局</h4><div class="meta">已结束｜8/8 人｜评分 4.8｜收入 ¥392</div><div class="row"><button class="secondary" data-screen="publish-template">复用发布</button><button class="secondary">评价</button></div></div>
+          </div>
+        </section>
+
+        <section class="screen" id="publish-template">
+          <div class="backbar"><button class="icon-btn" data-back>←</button><h2>发布活动</h2></div>
+          <div class="stepper"><div class="step active"></div><div class="step"></div><div class="step"></div><div class="step"></div></div>
+          <div class="section-title"><h3>选择活动模板</h3><span>1/4</span></div>
+          <button class="card activity" data-screen="publish-place">
+            <div class="cover">狼</div><div><h4>新手狼人杀局</h4><div class="meta">推荐 8-12 人｜适合新手破冰</div><div class="tags"><span class="tag green">自动填充文案</span></div></div>
+          </button>
+          <button class="card activity" data-screen="publish-place">
+            <div class="cover alt">桌</div><div><h4>轻松桌游交友局</h4><div class="meta">推荐 6-8 人｜低压力聊天</div><div class="tags"><span class="tag green">推荐 ¥49</span></div></div>
+          </button>
+        </section>
+
+        <section class="screen" id="publish-place">
+          <div class="backbar"><button class="icon-btn" data-back>←</button><h2>时间地点</h2></div>
+          <div class="stepper"><div class="step active"></div><div class="step active"></div><div class="step"></div><div class="step"></div></div>
+          <div class="form">
+            <label>活动日期<input value="2026-05-22"></label>
+            <label>开始时间<input value="19:30"></label>
+            <label>结束时间<input value="22:00"></label>
+            <label>选择场地<select><option>锦江区春熙路桌游店</option><option>太古里咖啡空间</option><option>高新区运动馆</option></select></label>
+            <button class="primary" data-screen="publish-capacity">下一步</button>
+          </div>
+        </section>
+
+        <section class="screen" id="publish-capacity">
+          <div class="backbar"><button class="icon-btn" data-back>←</button><h2>人数价格</h2></div>
+          <div class="stepper"><div class="step active"></div><div class="step active"></div><div class="step active"></div><div class="step"></div></div>
+          <div class="form">
+            <label>最少成局人数<input value="6"></label>
+            <label>最大人数<input value="12"></label>
+            <label>报名价格<input value="39"></label>
+            <label>报名截止时间<input value="活动开始前 2 小时"></label>
+            <label>标签<select><option>新手友好</option><option>主理人带玩</option><option>轻松聊天</option></select></label>
+            <button class="primary" data-screen="publish-confirm">下一步</button>
+          </div>
+        </section>
+
+        <section class="screen" id="publish-confirm">
+          <div class="backbar"><button class="icon-btn" data-back>←</button><h2>确认发布</h2></div>
+          <div class="stepper"><div class="step active"></div><div class="step active"></div><div class="step active"></div><div class="step active"></div></div>
+          <div class="info-block">
+            <h3>新手狼人杀局</h3>
+            <p>2026-05-22 19:30-22:00<br>锦江区春熙路桌游店<br>6-12 人｜¥39/人</p>
+          </div>
+          <div class="info-block">
+            <h3>活动介绍</h3>
+            <p>适合新手的狼人杀社交局，主理人会负责规则讲解、破冰和现场控场。</p>
+          </div>
+          <div class="row">
+            <button class="secondary" data-toast="草稿已保存">保存草稿</button>
+            <button class="primary" data-screen="publish-success">提交发布</button>
+          </div>
+        </section>
+
+        <section class="screen" id="publish-success">
+          <div class="empty">
+            <h2>发布成功</h2>
+            <p>活动已进入招募中。第一版可配置为直接发布，后续再接运营后台审核。</p>
+            <button class="primary" data-tab="events">查看我发布的</button>
+          </div>
+        </section>
+
+        <section class="screen" id="host-apply">
+          <div class="backbar"><button class="icon-btn" data-back>←</button><h2>申请主理人</h2></div>
+          <div class="form">
+            <label>真实姓名<input placeholder="用于平台审核"></label>
+            <label>常办城市<input value="成都"></label>
+            <label>常办区域<input value="锦江 / 武侯 / 青羊"></label>
+            <label>擅长游戏<select><option>狼人杀</option><option>桌游</option><option>Switch</option><option>轻运动</option></select></label>
+            <label>主持经验<textarea>有几次朋友局组织经验，熟悉狼人杀规则。</textarea></label>
+            <button class="primary" data-toast="申请已提交，等待审核">提交申请</button>
+          </div>
+        </section>
+
+        <section class="screen" id="edit-profile">
+          <div class="backbar"><button class="icon-btn" data-back>←</button><h2>编辑资料</h2></div>
+          <div class="form">
+            <label>昵称<input value="一颗骰子"></label>
+            <label>城市<input value="成都"></label>
+            <label>年龄段<select><option>23-26</option><option>27-30</option></select></label>
+            <label>兴趣标签<input value="桌游、狼人杀、羽毛球"></label>
+            <label>社交目标<select><option>找搭子</option><option>认识新朋友</option></select></label>
+            <button class="primary" data-toast="资料已保存">保存</button>
+          </div>
+        </section>
+
+        <section class="screen" id="search">
+          <div class="backbar"><button class="icon-btn" data-back>←</button><h2>搜索</h2></div>
+          <input placeholder="搜索活动、游戏、主理人">
+          <div class="section-title"><h3>热门搜索</h3></div>
+          <div class="tags"><span class="tag green">狼人杀</span><span class="tag">周末桌游</span><span class="tag">羽毛球搭子</span><span class="tag">新手友好</span></div>
+        </section>
+
+        <section class="screen" id="follows"><div class="backbar"><button class="icon-btn" data-back>←</button><h2>我的关注</h2></div><div class="card person"><div class="avatar">夏</div><div><h4>夏天</h4><div class="meta">局友｜桌游 / 狼人杀</div></div><button class="follow on">已关注</button></div></section>
+        <section class="screen" id="orders"><div class="backbar"><button class="icon-btn" data-back>←</button><h2>我的订单</h2></div><div class="info-block"><h3>周五狼人杀新手局</h3><p>订单金额：¥39<br>状态：已支付</p></div></section>
+        <section class="screen" id="reviews"><div class="backbar"><button class="icon-btn" data-back>←</button><h2>我的评价</h2></div><div class="empty">活动结束后可评价活动、主理人和现场氛围。</div></section>
+        <section class="screen" id="settings"><div class="backbar"><button class="icon-btn" data-back>←</button><h2>设置</h2></div><div class="info-block"><button class="list-item"><span>账号与安全</span><span>></span></button><button class="list-item"><span>隐私设置</span><span>></span></button><button class="list-item"><span>帮助与客服</span><span>></span></button><button class="list-item"><span>举报反馈</span><span>></span></button></div></section>
+
+        <nav class="bottom-nav">
+          <button class="nav-item active" data-tab="home"><span class="nav-icon">首</span><span>首页</span></button>
+          <button class="nav-item" data-tab="buddies"><span class="nav-icon">友</span><span>局友</span></button>
+          <button class="nav-item" data-tab="messages"><span class="nav-icon">消</span><span>消息</span></button>
+          <button class="nav-item" data-tab="events"><span class="nav-icon">活</span><span>活动</span></button>
+          <button class="nav-item" data-tab="mine"><span class="nav-icon">我</span><span>我的</span></button>
+        </nav>
+
+        <section class="sheet" id="activity-filter">
+          <div class="sheet-head"><h3>筛选活动</h3><button class="icon-btn" data-close-sheet>×</button></div>
+          <div class="info-block">
+            <h3>时间</h3><div class="tags"><button class="tag green">今天</button><button class="tag">明天</button><button class="tag">本周末</button><button class="tag">近 7 天</button><button class="tag">自定义日期</button></div>
+          </div>
+          <div class="info-block">
+            <h3>活动类型</h3><div class="tags"><button class="tag green">桌游</button><button class="tag">狼人杀</button><button class="tag">Switch</button><button class="tag">运动</button><button class="tag">派对游戏</button><button class="tag">轻社交</button><button class="tag">户外</button></div>
+          </div>
+          <div class="info-block">
+            <h3>地点</h3><div class="tags"><button class="tag green">附近</button><button class="tag">锦江</button><button class="tag">武侯</button><button class="tag">青羊</button><button class="tag">3km 内</button><button class="tag">5km 内</button></div>
+          </div>
+          <div class="info-block">
+            <h3>价格</h3><div class="tags"><button class="tag">免费</button><button class="tag green">50 元以下</button><button class="tag">50-100 元</button><button class="tag">100-200 元</button><button class="tag">200 元以上</button></div>
+          </div>
+          <div class="info-block">
+            <h3>人数状态</h3><div class="tags"><button class="tag green">还有名额</button><button class="tag">快成局</button><button class="tag">已成局</button><button class="tag">可候补</button></div>
+          </div>
+          <div class="info-block">
+            <h3>活动标签</h3><div class="tags"><button class="tag green">新手友好</button><button class="tag">女生友好</button><button class="tag">轻松聊天</button><button class="tag">主理人带玩</button><button class="tag">不限经验</button><button class="tag">下班后</button><button class="tag">周末局</button></div>
+          </div>
+          <button class="primary" style="width:100%" data-apply-filter>查看活动</button>
+        </section>
+
+        <section class="sheet" id="buddy-filter">
+          <div class="sheet-head"><h3>筛选主理人 / 局友</h3><button class="icon-btn" data-close-sheet>×</button></div>
+          <div class="info-block">
+            <h3>找主理人</h3><div class="tags"><button class="tag green">本周有局</button><button class="tag">评分 4.8+</button><button class="tag">举办 10 场以上</button><button class="tag">新手友好</button><button class="tag">女生友好</button><button class="tag">控场稳定</button></div>
+          </div>
+          <div class="info-block">
+            <h3>基础条件</h3><div class="tags"><button class="tag green">成都</button><button class="tag">附近</button><button class="tag">同商圈</button><button class="tag">不限性别</button><button class="tag">男</button><button class="tag">女</button></div>
+          </div>
+          <div class="info-block">
+            <h3>年龄段</h3><div class="tags"><button class="tag">18-22</button><button class="tag green">23-26</button><button class="tag">27-30</button><button class="tag">31-35</button><button class="tag">35+</button></div>
+          </div>
+          <div class="info-block">
+            <h3>游戏偏好</h3><div class="tags"><button class="tag green">桌游</button><button class="tag">狼人杀</button><button class="tag">Switch</button><button class="tag">运动</button><button class="tag">派对游戏</button><button class="tag">户外</button><button class="tag">推理</button><button class="tag">合作类</button></div>
+          </div>
+          <div class="info-block">
+            <h3>活跃时间</h3><div class="tags"><button class="tag">工作日晚</button><button class="tag green">周末白天</button><button class="tag">周末晚上</button><button class="tag">随时</button></div>
+          </div>
+          <div class="info-block">
+            <h3>社交目标</h3><div class="tags"><button class="tag">找搭子</button><button class="tag green">认识新朋友</button><button class="tag">想参加线下局</button><button class="tag">想找固定队友</button></div>
+          </div>
+          <div class="info-block">
+            <h3>身份</h3><div class="tags"><button class="tag green">主理人</button><button class="tag">普通用户</button><button class="tag">不限</button></div>
+          </div>
+          <button class="primary" style="width:100%" data-apply-filter>查看局友</button>
+        </section>
+
+        <div class="toast" id="toast"><div class="toast-inner">已完成</div></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const screens = document.querySelectorAll(".screen");
+    const navItems = document.querySelectorAll(".nav-item");
+    const historyStack = ["home"];
+    const mainTabs = new Set(["home", "buddies", "messages", "events", "mine"]);
+    const toast = document.getElementById("toast");
+    const carousel = document.querySelector(".carousel");
+    const carouselTrack = document.querySelector(".carousel-track");
+    const carouselSlides = Array.from(document.querySelectorAll(".carousel .hero-card"));
+    const carouselDots = Array.from(document.querySelectorAll("[data-carousel-dot]"));
+    let carouselIndex = 0;
+    let carouselTimer;
+    const activityList = document.getElementById("activity-list");
+    const activityCards = Array.from(document.querySelectorAll(".activity-card"));
+    const activityTitle = document.getElementById("activity-list-title");
+    const activityNote = document.getElementById("activity-list-note");
+    const loadMoreButton = document.querySelector("[data-load-more]");
+    const sortState = { key: "time", direction: "asc" };
+    let activeFilter = { mode: "all", title: "活动列表", note: "推荐活动优先展示，支持按时间、距离、热度、价格排序。" };
+    let loadedAllActivities = false;
+    let isLoggedIn = false;
+    let pendingScreen = "home";
+    const publicScreens = new Set(["home", "login", "register"]);
+
+    function showScreen(id, push = true) {
+      screens.forEach(screen => screen.classList.toggle("active", screen.id === id));
+      if (push && historyStack[historyStack.length - 1] !== id) historyStack.push(id);
+      navItems.forEach(item => item.classList.toggle("active", item.dataset.tab === id));
+      document.querySelectorAll(".sheet").forEach(sheet => sheet.classList.remove("open"));
+    }
+
+    function requireLogin(target = "home") {
+      if (isLoggedIn || publicScreens.has(target)) return false;
+      pendingScreen = target;
+      showScreen("login");
+      showToast("请先登录后继续");
+      return true;
+    }
+
+    function completeLogin() {
+      isLoggedIn = true;
+      showToast("登录成功");
+      showScreen(pendingScreen || "home");
+      pendingScreen = "home";
+    }
+
+    function goCarousel(index, behavior = "smooth") {
+      if (!carouselTrack || !carouselSlides.length) return;
+      carouselIndex = (index + carouselSlides.length) % carouselSlides.length;
+      carouselTrack.scrollTo({
+        left: carouselSlides[carouselIndex].offsetLeft,
+        behavior
+      });
+      carouselDots.forEach((dot, i) => dot.classList.toggle("active", i === carouselIndex));
+    }
+
+    function startCarousel() {
+      if (!carouselSlides.length) return;
+      clearInterval(carouselTimer);
+      carouselTimer = setInterval(() => goCarousel(carouselIndex + 1), 3000);
+    }
+
+    function syncCarouselFromScroll() {
+      if (!carouselTrack || !carouselSlides.length) return;
+      const width = carouselTrack.clientWidth || 1;
+      const nextIndex = Math.round(carouselTrack.scrollLeft / width);
+      if (nextIndex !== carouselIndex) {
+        carouselIndex = Math.max(0, Math.min(nextIndex, carouselSlides.length - 1));
+        carouselDots.forEach((dot, i) => dot.classList.toggle("active", i === carouselIndex));
+      }
+    }
+
+    function showToast(text) {
+      toast.querySelector(".toast-inner").textContent = text;
+      toast.classList.add("open");
+      setTimeout(() => toast.classList.remove("open"), 1600);
+    }
+
+    function readNumber(card, key) {
+      return Number(card.dataset[key] || 0);
+    }
+
+    function activityMatches(card) {
+      const tags = card.dataset.tags || "";
+      if (activeFilter.mode === "all") return loadedAllActivities || !card.classList.contains("more-activity");
+      if (activeFilter.mode === "today") return card.dataset.time === "today";
+      if (activeFilter.mode === "weekend") return card.dataset.time === "weekend";
+      if (activeFilter.mode === "type") return card.dataset.type === activeFilter.value;
+      if (activeFilter.mode === "tag") return tags.includes(activeFilter.value);
+      if (activeFilter.mode === "hot-week") return card.dataset.week === "week" && readNumber(card, "hot") >= 85;
+      if (activeFilter.mode === "host") return readNumber(card, "hostScore") >= 4.8 || tags.includes("主理人带玩");
+      if (activeFilter.mode === "nearby-hot") return readNumber(card, "distance") <= 3 && readNumber(card, "hot") >= 85;
+      if (activeFilter.mode === "featured") return card.dataset.featured === "true" || tags.includes("平台精选");
+      return true;
+    }
+
+    function compareActivities(a, b) {
+      const direction = sortState.direction === "asc" ? 1 : -1;
+      if (sortState.key === "time") return (readNumber(a, "start") - readNumber(b, "start")) * direction;
+      if (sortState.key === "distance") return (readNumber(a, "distance") - readNumber(b, "distance")) * direction;
+      if (sortState.key === "hot") return (readNumber(a, "hot") - readNumber(b, "hot")) * direction;
+      if (sortState.key === "price") return (readNumber(a, "price") - readNumber(b, "price")) * direction;
+      return 0;
+    }
+
+    function updateSortUI() {
+      document.querySelectorAll("[data-sort]").forEach(btn => {
+        const isActive = btn.dataset.sort === sortState.key;
+        btn.classList.toggle("active", isActive);
+        const arrow = btn.querySelector(".sort-arrow");
+        if (arrow) arrow.textContent = isActive ? (sortState.direction === "asc" ? "↑" : "↓") : "";
+      });
+    }
+
+    function renderActivityList() {
+      if (!activityList) return;
+      activityTitle.textContent = activeFilter.title;
+      activityNote.textContent = activeFilter.note;
+      activityCards.sort(compareActivities).forEach(card => activityList.appendChild(card));
+      activityList.appendChild(document.getElementById("activity-empty"));
+
+      let visibleCount = 0;
+      activityCards.forEach(card => {
+        const visible = activityMatches(card);
+        card.classList.toggle("hidden-card", !visible);
+        if (visible) {
+          card.style.display = "grid";
+          visibleCount += 1;
+        } else {
+          card.style.display = "";
+        }
+      });
+
+      document.getElementById("activity-empty").style.display = visibleCount ? "none" : "block";
+      if (loadMoreButton) {
+        const shouldShowLoad = activeFilter.mode === "all" && !loadedAllActivities;
+        loadMoreButton.style.display = shouldShowLoad ? "block" : "none";
+        loadMoreButton.textContent = shouldShowLoad ? "上拉加载更多活动" : "已加载全部活动";
+      }
+      updateSortUI();
+    }
+
+    function setQuickFilter(value, label) {
+      loadedAllActivities = value !== "all";
+      const map = {
+        all: { mode: "all", title: "活动列表", note: "推荐活动优先展示，支持按时间、距离、热度、价格排序。" },
+        tonight: { mode: "today", title: "今晚可参加", note: "仅展示今天可报名、下班后可参加的活动。" },
+        weekend: { mode: "weekend", title: "周末活动", note: "筛选周六、周日适合线下见面的活动。" },
+        "桌游": { mode: "type", value: "桌游", title: "桌游活动", note: "按活动类型筛选：桌游。" },
+        "狼人杀": { mode: "type", value: "狼人杀", title: "狼人杀活动", note: "按活动类型筛选：狼人杀。" },
+        "Switch": { mode: "type", value: "Switch", title: "Switch 活动", note: "按活动类型筛选：Switch。" },
+        "运动": { mode: "type", value: "运动", title: "运动活动", note: "按活动类型筛选：轻运动、羽毛球等。" }
+      };
+      activeFilter = map[value] || map.all;
+      document.querySelectorAll("[data-quick-filter]").forEach(btn => btn.classList.toggle("active", btn.dataset.quickFilter === value));
+      renderActivityList();
+      showToast(label || activeFilter.title);
+    }
+
+    function setPresetFilter(preset) {
+      loadedAllActivities = true;
+      const map = {
+        tonight: { mode: "today", title: "今晚可参加", note: "推荐频道筛选：今天可报名、今晚能到场的所有活动。" },
+        "hot-week": { mode: "hot-week", title: "本周热门", note: "推荐频道筛选：本周内报名和热度较高的活动，默认可继续排序。" },
+        beginner: { mode: "tag", value: "新手友好", title: "新手友好", note: "推荐频道筛选：带新手友好标签，不会玩也能参加。" },
+        host: { mode: "host", title: "主理人推荐", note: "推荐频道筛选：主理人评分高或明确主理人带玩的活动。" },
+        "nearby-hot": { mode: "nearby-hot", title: "附近高报名", note: "推荐频道筛选：距离较近且报名热度较高的活动。" },
+        featured: { mode: "featured", title: "平台精选", note: "推荐频道筛选：平台精选和低尴尬社交场。" }
+      };
+      activeFilter = map[preset] || map.tonight;
+      document.querySelectorAll("[data-quick-filter]").forEach(btn => btn.classList.remove("active"));
+      renderActivityList();
+      document.getElementById("activity-list-title").scrollIntoView({ behavior: "smooth", block: "start" });
+      showToast(`已进入「${activeFilter.title}」列表`);
+    }
+
+    document.addEventListener("click", event => {
+      const screenBtn = event.target.closest("[data-screen]");
+      const tabBtn = event.target.closest("[data-tab]");
+      const backBtn = event.target.closest("[data-back]");
+      const sheetBtn = event.target.closest("[data-sheet]");
+      const closeSheetBtn = event.target.closest("[data-close-sheet]");
+      const toastBtn = event.target.closest("[data-toast]");
+      const followBtn = event.target.closest("[data-follow]");
+      const buddyTab = event.target.closest("[data-buddy-tab]");
+      const eventTab = event.target.closest("[data-event-tab]");
+      const applyFilter = event.target.closest("[data-apply-filter]");
+      const sendChat = event.target.closest("[data-send-chat]");
+      const sortBtn = event.target.closest("[data-sort]");
+      const loadMoreBtn = event.target.closest("[data-load-more]");
+      const carouselDot = event.target.closest("[data-carousel-dot]");
+      const presetBtn = event.target.closest("[data-preset]");
+      const quickFilterBtn = event.target.closest("[data-quick-filter]");
+      const loginBtn = event.target.closest("[data-login]");
+
+      if (loginBtn) {
+        completeLogin();
+        return;
+      }
+      if (presetBtn) {
+        setPresetFilter(presetBtn.dataset.preset);
+        return;
+      }
+      if (quickFilterBtn) {
+        setQuickFilter(quickFilterBtn.dataset.quickFilter, quickFilterBtn.textContent.trim());
+        return;
+      }
+      if (screenBtn && !event.target.closest("[data-follow]")) {
+        if (requireLogin(screenBtn.dataset.screen)) return;
+        showScreen(screenBtn.dataset.screen);
+      }
+      if (tabBtn) {
+        if (requireLogin(tabBtn.dataset.tab)) return;
+        showScreen(tabBtn.dataset.tab);
+      }
+      if (backBtn) {
+        historyStack.pop();
+        showScreen(historyStack[historyStack.length - 1] || "home", false);
+      }
+      if (sheetBtn) document.getElementById(sheetBtn.dataset.sheet).classList.add("open");
+      if (closeSheetBtn) closeSheetBtn.closest(".sheet").classList.remove("open");
+      if (toastBtn) showToast(toastBtn.dataset.toast);
+      if (followBtn) {
+        event.stopPropagation();
+        if (requireLogin("buddies")) return;
+        followBtn.classList.toggle("on");
+        followBtn.textContent = followBtn.classList.contains("on") ? "已关注" : "关注";
+        showToast(followBtn.classList.contains("on") ? "已关注" : "已取消关注");
+      }
+      if (buddyTab) {
+        document.querySelectorAll("[data-buddy-tab]").forEach(btn => btn.classList.toggle("active", btn === buddyTab));
+        document.getElementById("players-list").style.display = buddyTab.dataset.buddyTab === "players" ? "block" : "none";
+        document.getElementById("hosts-list").style.display = buddyTab.dataset.buddyTab === "hosts" ? "block" : "none";
+      }
+      if (eventTab) {
+        document.querySelectorAll("[data-event-tab]").forEach(btn => btn.classList.toggle("active", btn === eventTab));
+        document.getElementById("joined-events").style.display = eventTab.dataset.eventTab === "joined" ? "block" : "none";
+        document.getElementById("published-events").style.display = eventTab.dataset.eventTab === "published" ? "block" : "none";
+      }
+      if (applyFilter) {
+        applyFilter.closest(".sheet").classList.remove("open");
+        showToast("筛选条件已应用");
+      }
+      if (sortBtn) {
+        if (sortState.key === sortBtn.dataset.sort) {
+          sortState.direction = sortState.direction === "asc" ? "desc" : "asc";
+        } else {
+          sortState.key = sortBtn.dataset.sort;
+          sortState.direction = sortState.key === "hot" ? "desc" : "asc";
+        }
+        renderActivityList();
+        const labels = { time: "时间", distance: "距离", hot: "热度", price: "价格" };
+        showToast(`已按${labels[sortState.key]}${sortState.direction === "asc" ? "升序" : "降序"}排序`);
+      }
+      if (loadMoreBtn) {
+        loadedAllActivities = true;
+        renderActivityList();
+        showToast("已加载更多活动");
+      }
+      if (carouselDot) {
+        event.stopPropagation();
+        goCarousel(Number(carouselDot.dataset.carouselDot));
+        startCarousel();
+      }
+      if (sendChat) {
+        if (requireLogin("chat")) return;
+        const input = document.getElementById("chat-input");
+        if (!input.value.trim()) return showToast("请输入消息");
+        const bubble = document.createElement("div");
+        bubble.className = "bubble me";
+        bubble.textContent = input.value.trim();
+        document.querySelector(".chat").appendChild(bubble);
+        input.value = "";
+        showToast("消息已发送");
+      }
+    });
+
+    if (carouselTrack) {
+      carouselTrack.addEventListener("scroll", syncCarouselFromScroll, { passive: true });
+    }
+    if (carousel) {
+      carousel.addEventListener("mouseenter", () => clearInterval(carouselTimer));
+      carousel.addEventListener("mouseleave", startCarousel);
+      carousel.addEventListener("touchstart", () => clearInterval(carouselTimer), { passive: true });
+      carousel.addEventListener("touchend", startCarousel, { passive: true });
+    }
+    renderActivityList();
+    startCarousel();
+  </script>
+</body>
+</html>
