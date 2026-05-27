@@ -879,6 +879,117 @@
       font-size: 14px;
     }
 
+    .plaza-actions {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .post-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .post-card {
+      padding: 14px;
+      text-align: left;
+    }
+
+    .post-card.hidden-post {
+      display: none;
+    }
+
+    .post-head {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .post-author h4 {
+      margin: 0 0 4px;
+      font-size: 15px;
+    }
+
+    .post-author p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .post-type {
+      border-radius: 999px;
+      padding: 5px 8px;
+      background: #e7f5ef;
+      color: var(--brand-dark);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .post-content {
+      margin: 0 0 10px;
+      color: #28322e;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .post-meta {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .post-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--line);
+      margin: 10px -14px -14px;
+    }
+
+    .post-actions button {
+      height: 42px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      border-right: 1px solid var(--line);
+    }
+
+    .post-actions button:last-child {
+      border-right: 0;
+    }
+
+    .linked-activity {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      background: #f7f5ef;
+      border: 1px solid #ebe7dd;
+    }
+
+    .comment {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .comment:last-child {
+      border-bottom: 0;
+    }
+
+    .comment b {
+      font-size: 13px;
+    }
+
+    .comment p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
     .bottom-nav {
       position: absolute;
       left: 0;
@@ -913,6 +1024,18 @@
       place-items: center;
       font-size: 12px;
       line-height: 1;
+    }
+
+    .nav-item.publish .nav-icon {
+      width: 42px;
+      height: 42px;
+      margin-top: -16px;
+      border-radius: 50%;
+      background: var(--brand);
+      border-color: var(--brand);
+      color: #fff;
+      font-size: 24px;
+      box-shadow: 0 8px 18px rgba(22, 160, 133, .35);
     }
 
     .nav-item.active {
@@ -1112,13 +1235,13 @@
     <aside class="brief">
       <h1>游戏交友 App MVP 交互原型</h1>
       <p>第一版可点击原型，用于讲解产品结构和核心流程。用户与主理人在同一个 App 内，主理人申请通过后获得发布活动能力。</p>
-      <p>演示顺序：先看首页活动报名，再看局友筛选和关注，然后进入消息群聊，最后演示主理人申请与发布活动。</p>
+      <p>演示顺序：先看首页频道进入二级活动列表，再从找局友频道进入主理人/局友页，然后进入消息群聊，最后演示中间发布按钮和我的活动管理。</p>
       <ul>
-        <li>首页：推荐活动 + 活动列表 + 活动筛选</li>
-        <li>局友：筛选用户 / 主理人，查看主页，关注</li>
+        <li>首页：推荐频道 + 首页活动列表</li>
+        <li>广场：同城动态和找局友入口</li>
+        <li>发布：底部中间按钮发布活动</li>
         <li>消息：活动群聊和系统通知</li>
-        <li>活动：我参与的 / 我发布的</li>
-        <li>我的：资料、关注、订单、主理人申请</li>
+        <li>我的：资料、常用功能、我的活动</li>
       </ul>
     </aside>
 
@@ -1193,8 +1316,8 @@
             <button class="recommend-tile" data-preset="hot-week"><b>本周热门</b><span>报名增长最快</span></button>
             <button class="recommend-tile" data-preset="beginner"><b>新手友好</b><span>不会玩也能加入</span></button>
             <button class="recommend-tile" data-preset="host"><b>主理人推荐</b><span>稳定控场的优质局</span></button>
-            <button class="recommend-tile" data-preset="nearby-hot"><b>附近高报名</b><span>3km 内快成局</span></button>
             <button class="recommend-tile" data-preset="featured"><b>平台精选</b><span>低尴尬社交场</span></button>
+            <button class="recommend-tile" data-screen="buddies"><b>找局友</b><span>找主理人和同好搭子</span></button>
           </div>
 
           <div class="chips">
@@ -1271,6 +1394,127 @@
             <div class="empty" id="activity-empty" style="display:none">没有符合条件的活动，换个筛选条件试试。</div>
           </div>
           <button class="load-more" data-load-more>上拉加载更多活动</button>
+        </section>
+
+        <section class="screen" id="activity-list-page">
+          <div class="backbar"><button class="icon-btn" data-back>←</button><h2 id="channel-list-title">活动列表</h2></div>
+          <div class="topbar">
+            <input id="channel-search-input" placeholder="搜索活动、游戏、地点、主理人">
+            <button class="icon-btn" data-channel-search aria-label="搜索活动">搜</button>
+          </div>
+          <div class="sort-bar">
+            <button class="active" data-sort="time">时间<span class="sort-arrow">↑</span></button>
+            <button data-sort="distance">距离<span class="sort-arrow"></span></button>
+            <button data-sort="hot">热度<span class="sort-arrow"></span></button>
+            <button data-sort="price">价格<span class="sort-arrow"></span></button>
+          </div>
+          <div id="channel-activity-list"></div>
+        </section>
+
+        <section class="screen" id="plaza">
+          <div class="section-title"><h3>广场</h3><span>同城动态</span></div>
+          <div class="plaza-actions">
+            <button class="search">分享心情、找搭子、问问题</button>
+            <button class="primary" data-screen="post-create">发布</button>
+          </div>
+          <div class="chips" id="post-categories">
+            <button class="chip active" data-post-category="全部">全部</button>
+            <button class="chip" data-post-category="关注">关注</button>
+            <button class="chip" data-post-category="找搭子">找搭子</button>
+            <button class="chip" data-post-category="想法">想法</button>
+            <button class="chip" data-post-category="反馈">反馈</button>
+            <button class="chip" data-post-category="提问">提问</button>
+          </div>
+          <div class="sort-bar">
+            <button class="active" data-post-sort="recommend">推荐</button>
+            <button data-post-sort="latest">最新</button>
+            <button data-post-sort="nearby">附近</button>
+            <button data-post-sort="hot">最热</button>
+          </div>
+          <div class="post-list" id="post-list">
+            <div class="card post-card" data-screen="post-detail" data-category="找搭子" data-following="true" data-time="400" data-distance="1.2" data-hot="42">
+              <div class="post-head">
+                <div class="avatar small">夏</div>
+                <div class="post-author"><h4>夏天</h4><p>锦江｜10 分钟前｜桌游 / 狼人杀</p></div>
+                <span class="post-type">找搭子</span>
+              </div>
+              <p class="post-content">今晚有没有人想一起玩轻松点的桌游？新手友好，不想太烧脑，最好春熙路附近。</p>
+              <div class="post-meta"><span class="tag green">桌游</span><span class="tag">今晚</span><span class="tag">春熙路</span><span class="tag">2 人已响应</span></div>
+              <div class="post-actions"><button>我也想玩</button><button>评论 8</button><button>点赞 21</button></div>
+            </div>
+
+            <div class="card post-card" data-screen="post-detail" data-category="想法" data-following="false" data-time="380" data-distance="3.8" data-hot="18">
+              <div class="post-head">
+                <div class="avatar small blue">南</div>
+                <div class="post-author"><h4>南风</h4><p>青羊｜25 分钟前｜Switch / 轻运动</p></div>
+                <span class="post-type">想法</span>
+              </div>
+              <p class="post-content">发现马里奥派对真的很适合不熟的人破冰，输赢不重要，大家一起笑起来就熟了。</p>
+              <div class="post-meta"><span class="tag green">Switch</span><span class="tag">破冰</span><span class="tag">轻松聊天</span></div>
+              <div class="post-actions"><button>关注</button><button>评论 5</button><button>点赞 18</button></div>
+            </div>
+
+            <div class="card post-card" data-screen="post-detail" data-category="反馈" data-following="true" data-time="320" data-distance="2.4" data-hot="58">
+              <div class="post-head">
+                <div class="avatar small red">哲</div>
+                <div class="post-author"><h4>阿哲</h4><p>锦江｜1 小时前｜主理人 / 狼人杀</p></div>
+                <span class="post-type">反馈</span>
+              </div>
+              <p class="post-content">昨晚新手狼人杀局氛围很好，第一次玩的朋友也发言很积极。下次会把破冰时间再加长一点。</p>
+              <div class="photo-strip"><div class="photo">现场照片</div><div class="photo alt">游戏卡牌</div><div class="photo warm">活动合影</div></div>
+              <div class="linked-activity"><b>关联活动：周五狼人杀新手局</b><div class="meta">今晚 19:30｜锦江区春熙路桌游店</div></div>
+              <div class="post-actions"><button>查看活动</button><button>评论 12</button><button>点赞 36</button></div>
+            </div>
+
+            <div class="card post-card" data-screen="post-detail" data-category="提问" data-following="false" data-time="260" data-distance="5.1" data-hot="26">
+              <div class="post-head">
+                <div class="avatar small">可</div>
+                <div class="post-author"><h4>可可</h4><p>武侯｜2 小时前｜派对游戏</p></div>
+                <span class="post-type">提问</span>
+              </div>
+              <p class="post-content">成都有没有适合 6-8 个人玩桌游、说话不太吵的咖啡空间？最好能提前预约。</p>
+              <div class="post-meta"><span class="tag green">场地</span><span class="tag">桌游</span><span class="tag">求推荐</span></div>
+              <div class="post-actions"><button>回答</button><button>评论 9</button><button>点赞 13</button></div>
+            </div>
+            <div class="empty" id="post-empty" style="display:none">没有符合条件的动态。</div>
+          </div>
+        </section>
+
+        <section class="screen" id="post-create">
+          <div class="backbar"><button class="icon-btn" data-back>←</button><h2>发布动态</h2></div>
+          <div class="form">
+            <label>动态类型<select><option>找搭子</option><option>想法</option><option>反馈</option><option>提问</option></select></label>
+            <label>内容<textarea placeholder="写下你的心情、状态、想法，或者想找什么局友"></textarea></label>
+            <label>游戏标签<input value="桌游、狼人杀"></label>
+            <label>位置 / 商圈<select><option>春熙路</option><option>太古里</option><option>高新区</option><option>武侯区</option><option>不显示位置</option></select></label>
+            <label>关联活动<select><option>不关联活动</option><option>周五狼人杀新手局</option><option>下班后桌游认识新朋友</option></select></label>
+            <label>图片上传<input value="最多 9 张，原型占位"></label>
+            <label>评论权限<select><option>允许所有人评论</option><option>仅关注的人评论</option><option>关闭评论</option></select></label>
+            <button class="primary" data-toast="动态已发布">发布动态</button>
+          </div>
+        </section>
+
+        <section class="screen" id="post-detail">
+          <div class="backbar"><button class="icon-btn" data-back>←</button><h2>动态详情</h2></div>
+          <div class="card post-card">
+            <div class="post-head">
+              <div class="avatar small">夏</div>
+              <div class="post-author"><h4>夏天</h4><p>锦江｜10 分钟前｜桌游 / 狼人杀</p></div>
+              <span class="post-type">找搭子</span>
+            </div>
+            <p class="post-content">今晚有没有人想一起玩轻松点的桌游？新手友好，不想太烧脑，最好春熙路附近。希望 4-6 个人就好，不想太多人。</p>
+            <div class="post-meta"><span class="tag green">桌游</span><span class="tag">今晚</span><span class="tag">春熙路</span><span class="tag">找搭子</span></div>
+          </div>
+          <div class="info-block">
+            <h3>评论</h3>
+            <div class="comment"><b>南风</b><p>我也想玩轻松一点的，可以接受新手吗？</p></div>
+            <div class="comment"><b>夏天 回复 南风</b><p>可以呀，我也是偏新手。</p></div>
+            <div class="comment"><b>阿哲</b><p>如果人够的话，可以直接开一个新手桌游局。</p></div>
+          </div>
+          <div class="chat-input">
+            <input id="post-comment-input" placeholder="写评论或回复">
+            <button class="primary" data-send-comment>发送</button>
+          </div>
         </section>
 
         <section class="screen" id="buddies">
@@ -1477,6 +1721,7 @@
             <h3>常用功能</h3>
             <div class="menu-grid">
               <button class="menu-item" data-screen="edit-profile"><span class="menu-icon">资</span><span>编辑资料</span></button>
+              <button class="menu-item" data-screen="events"><span class="menu-icon">活</span><span>我的活动</span></button>
               <button class="menu-item" data-screen="follows"><span class="menu-icon">关</span><span>我的关注</span></button>
               <button class="menu-item" data-screen="orders"><span class="menu-icon">单</span><span>我的订单</span></button>
               <button class="menu-item" data-screen="reviews"><span class="menu-icon">评</span><span>我的评价</span></button>
@@ -1556,7 +1801,7 @@
             <h2>报名成功</h2>
             <p>你已加入“周五狼人杀新手局”。可以先进入活动群，看主理人公告和到场提醒。</p>
             <button class="primary" data-screen="chat">进入活动群</button>
-            <button class="secondary" style="margin-top:10px" data-tab="events">查看我的活动</button>
+            <button class="secondary" style="margin-top:10px" data-screen="events">查看我的活动</button>
           </div>
         </section>
 
@@ -1795,6 +2040,30 @@
             <label>报名价格<input value="39"></label>
             <label>报名截止时间<input value="活动开始前 2 小时"></label>
             <label>标签<select><option>新手友好</option><option>主理人带玩</option><option>轻松聊天</option></select></label>
+            <button class="primary" data-screen="publish-media">下一步</button>
+          </div>
+        </section>
+
+        <section class="screen" id="publish-media">
+          <div class="backbar"><button class="icon-btn" data-back>←</button><h2>图片视频</h2></div>
+          <div class="stepper"><div class="step active"></div><div class="step active"></div><div class="step active"></div><div class="step active"></div></div>
+          <div class="info-block">
+            <h3>活动素材</h3>
+            <p>主理人可以通过封面、现场图、道具图和短视频提升报名转化。第一版原型仅展示上传入口和素材预览。</p>
+          </div>
+          <div class="form">
+            <label>活动封面图<input value="建议 1 张，展示在活动列表和详情页"></label>
+            <label>现场/场地图片<input value="最多 9 张，可展示环境、道具、往期现场"></label>
+            <label>活动短视频<input value="最多 1 条，建议 15-30 秒"></label>
+            <label>视频封面<input value="可选，用于视频未播放时展示"></label>
+            <label>素材说明<textarea>展示场地环境、游戏道具、往期轻松氛围，帮助用户降低报名顾虑。</textarea></label>
+            <div class="photo-strip">
+              <div class="photo">封面图</div>
+              <div class="photo alt">场地图</div>
+              <div class="photo warm">道具图</div>
+              <div class="photo deep">短视频</div>
+              <div class="photo">往期现场</div>
+            </div>
             <button class="primary" data-screen="publish-confirm">下一步</button>
           </div>
         </section>
@@ -1810,6 +2079,17 @@
             <h3>活动介绍</h3>
             <p>适合新手的狼人杀社交局，主理人会负责规则讲解、破冰和现场控场。</p>
           </div>
+          <div class="info-block">
+            <h3>图片视频素材</h3>
+            <p>封面图 1 张｜现场图片 4 张｜短视频 1 条<br>素材将用于活动列表、活动详情和分享卡片展示。</p>
+            <div class="photo-strip">
+              <div class="photo">活动封面</div>
+              <div class="photo alt">场地</div>
+              <div class="photo warm">道具</div>
+              <div class="photo deep">视频</div>
+              <div class="photo">现场</div>
+            </div>
+          </div>
           <div class="row">
             <button class="secondary" data-toast="草稿已保存">保存草稿</button>
             <button class="primary" data-screen="publish-success">提交发布</button>
@@ -1820,7 +2100,7 @@
           <div class="empty">
             <h2>发布成功</h2>
             <p>活动已进入招募中。第一版可配置为直接发布，后续再接运营后台审核。</p>
-            <button class="primary" data-tab="events">查看我发布的</button>
+            <button class="primary" data-screen="events">查看我发布的</button>
           </div>
         </section>
 
@@ -1862,9 +2142,9 @@
 
         <nav class="bottom-nav">
           <button class="nav-item active" data-tab="home"><span class="nav-icon">首</span><span>首页</span></button>
-          <button class="nav-item" data-tab="buddies"><span class="nav-icon">友</span><span>局友</span></button>
+          <button class="nav-item" data-tab="plaza"><span class="nav-icon">广</span><span>广场</span></button>
+          <button class="nav-item publish" data-screen="publish-template"><span class="nav-icon">+</span><span>发布</span></button>
           <button class="nav-item" data-tab="messages"><span class="nav-icon">消</span><span>消息</span></button>
-          <button class="nav-item" data-tab="events"><span class="nav-icon">活</span><span>活动</span></button>
           <button class="nav-item" data-tab="mine"><span class="nav-icon">我</span><span>我的</span></button>
         </nav>
 
@@ -1926,7 +2206,7 @@
     const screens = document.querySelectorAll(".screen");
     const navItems = document.querySelectorAll(".nav-item");
     const historyStack = ["home"];
-    const mainTabs = new Set(["home", "buddies", "messages", "events", "mine"]);
+    const mainTabs = new Set(["home", "plaza", "messages", "mine"]);
     const toast = document.getElementById("toast");
     const carousel = document.querySelector(".carousel");
     const carouselTrack = document.querySelector(".carousel-track");
@@ -1938,18 +2218,26 @@
     const activityCards = Array.from(document.querySelectorAll(".activity-card"));
     const activityTitle = document.getElementById("activity-list-title");
     const activityNote = document.getElementById("activity-list-note");
+    const channelTitle = document.getElementById("channel-list-title");
+    const channelList = document.getElementById("channel-activity-list");
     const loadMoreButton = document.querySelector("[data-load-more]");
     const sortState = { key: "time", direction: "asc" };
     let activeFilter = { mode: "all", title: "活动列表", note: "推荐活动优先展示，支持按时间、距离、热度、价格排序。" };
+    let channelFilter = activeFilter;
+    let channelSearchText = "";
     let loadedAllActivities = false;
     let isLoggedIn = false;
     let pendingScreen = "home";
     const publicScreens = new Set(["home", "login", "register"]);
+    const postList = document.getElementById("post-list");
+    const postCards = Array.from(document.querySelectorAll(".post-card[data-category]"));
+    let postCategory = "全部";
+    let postSort = "recommend";
 
     function showScreen(id, push = true) {
       screens.forEach(screen => screen.classList.toggle("active", screen.id === id));
       if (push && historyStack[historyStack.length - 1] !== id) historyStack.push(id);
-      navItems.forEach(item => item.classList.toggle("active", item.dataset.tab === id));
+      navItems.forEach(item => item.classList.toggle("active", item.dataset.tab === id && mainTabs.has(id)));
       document.querySelectorAll(".sheet").forEach(sheet => sheet.classList.remove("open"));
     }
 
@@ -2005,16 +2293,19 @@
     }
 
     function activityMatches(card) {
+      return activityMatchesFilter(card, activeFilter);
+    }
+
+    function activityMatchesFilter(card, filter) {
       const tags = card.dataset.tags || "";
-      if (activeFilter.mode === "all") return loadedAllActivities || !card.classList.contains("more-activity");
-      if (activeFilter.mode === "today") return card.dataset.time === "today";
-      if (activeFilter.mode === "weekend") return card.dataset.time === "weekend";
-      if (activeFilter.mode === "type") return card.dataset.type === activeFilter.value;
-      if (activeFilter.mode === "tag") return tags.includes(activeFilter.value);
-      if (activeFilter.mode === "hot-week") return card.dataset.week === "week" && readNumber(card, "hot") >= 85;
-      if (activeFilter.mode === "host") return readNumber(card, "hostScore") >= 4.8 || tags.includes("主理人带玩");
-      if (activeFilter.mode === "nearby-hot") return readNumber(card, "distance") <= 3 && readNumber(card, "hot") >= 85;
-      if (activeFilter.mode === "featured") return card.dataset.featured === "true" || tags.includes("平台精选");
+      if (filter.mode === "all") return loadedAllActivities || !card.classList.contains("more-activity");
+      if (filter.mode === "today") return card.dataset.time === "today";
+      if (filter.mode === "weekend") return card.dataset.time === "weekend";
+      if (filter.mode === "type") return card.dataset.type === filter.value;
+      if (filter.mode === "tag") return tags.includes(filter.value);
+      if (filter.mode === "hot-week") return card.dataset.week === "week" && readNumber(card, "hot") >= 85;
+      if (filter.mode === "host") return readNumber(card, "hostScore") >= 4.8 || tags.includes("主理人带玩");
+      if (filter.mode === "featured") return card.dataset.featured === "true" || tags.includes("平台精选");
       return true;
     }
 
@@ -2064,6 +2355,31 @@
       updateSortUI();
     }
 
+    function renderChannelList() {
+      if (!channelList) return;
+      channelTitle.textContent = channelFilter.title;
+      channelList.innerHTML = "";
+      const visibleCards = activityCards
+        .filter(card => activityMatchesFilter(card, channelFilter))
+        .filter(card => !channelSearchText || card.textContent.toLowerCase().includes(channelSearchText))
+        .sort(compareActivities);
+
+      if (!visibleCards.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "没有符合条件的活动，换个频道试试。";
+        channelList.appendChild(empty);
+      } else {
+        visibleCards.forEach(card => {
+          const clone = card.cloneNode(true);
+          clone.classList.remove("more-activity", "hidden-card");
+          clone.style.display = "grid";
+          channelList.appendChild(clone);
+        });
+      }
+      updateSortUI();
+    }
+
     function setQuickFilter(value, label) {
       loadedAllActivities = value !== "all";
       const map = {
@@ -2084,18 +2400,48 @@
     function setPresetFilter(preset) {
       loadedAllActivities = true;
       const map = {
-        tonight: { mode: "today", title: "今晚可参加", note: "推荐频道筛选：今天可报名、今晚能到场的所有活动。" },
-        "hot-week": { mode: "hot-week", title: "本周热门", note: "推荐频道筛选：本周内报名和热度较高的活动，默认可继续排序。" },
-        beginner: { mode: "tag", value: "新手友好", title: "新手友好", note: "推荐频道筛选：带新手友好标签，不会玩也能参加。" },
-        host: { mode: "host", title: "主理人推荐", note: "推荐频道筛选：主理人评分高或明确主理人带玩的活动。" },
-        "nearby-hot": { mode: "nearby-hot", title: "附近高报名", note: "推荐频道筛选：距离较近且报名热度较高的活动。" },
-        featured: { mode: "featured", title: "平台精选", note: "推荐频道筛选：平台精选和低尴尬社交场。" }
+        tonight: { mode: "today", title: "今晚可参加" },
+        "hot-week": { mode: "hot-week", title: "本周热门" },
+        beginner: { mode: "tag", value: "新手友好", title: "新手友好" },
+        host: { mode: "host", title: "主理人推荐" },
+        featured: { mode: "featured", title: "平台精选" }
       };
-      activeFilter = map[preset] || map.tonight;
+      channelFilter = map[preset] || map.tonight;
+      channelSearchText = "";
+      const channelSearchInput = document.getElementById("channel-search-input");
+      if (channelSearchInput) channelSearchInput.value = "";
       document.querySelectorAll("[data-quick-filter]").forEach(btn => btn.classList.remove("active"));
-      renderActivityList();
-      document.getElementById("activity-list-title").scrollIntoView({ behavior: "smooth", block: "start" });
-      showToast(`已进入「${activeFilter.title}」列表`);
+      renderChannelList();
+      showScreen("activity-list-page");
+      showToast(`已进入「${channelFilter.title}」列表`);
+    }
+
+    function postMatches(card) {
+      if (postCategory === "全部") return true;
+      if (postCategory === "关注") return card.dataset.following === "true";
+      return card.dataset.category === postCategory;
+    }
+
+    function comparePosts(a, b) {
+      if (postSort === "latest") return readNumber(b, "time") - readNumber(a, "time");
+      if (postSort === "nearby") return readNumber(a, "distance") - readNumber(b, "distance");
+      if (postSort === "hot") return readNumber(b, "hot") - readNumber(a, "hot");
+      return (readNumber(b, "hot") + readNumber(b, "time") / 20) - (readNumber(a, "hot") + readNumber(a, "time") / 20);
+    }
+
+    function renderPosts() {
+      if (!postList) return;
+      postCards.sort(comparePosts).forEach(card => postList.appendChild(card));
+      postList.appendChild(document.getElementById("post-empty"));
+      let visibleCount = 0;
+      postCards.forEach(card => {
+        const visible = postMatches(card);
+        card.classList.toggle("hidden-post", !visible);
+        if (visible) visibleCount += 1;
+      });
+      document.getElementById("post-empty").style.display = visibleCount ? "none" : "block";
+      document.querySelectorAll("[data-post-category]").forEach(btn => btn.classList.toggle("active", btn.dataset.postCategory === postCategory));
+      document.querySelectorAll("[data-post-sort]").forEach(btn => btn.classList.toggle("active", btn.dataset.postSort === postSort));
     }
 
     document.addEventListener("click", event => {
@@ -2116,9 +2462,32 @@
       const presetBtn = event.target.closest("[data-preset]");
       const quickFilterBtn = event.target.closest("[data-quick-filter]");
       const loginBtn = event.target.closest("[data-login]");
+      const postCategoryBtn = event.target.closest("[data-post-category]");
+      const postSortBtn = event.target.closest("[data-post-sort]");
+      const sendCommentBtn = event.target.closest("[data-send-comment]");
+      const channelSearchBtn = event.target.closest("[data-channel-search]");
 
       if (loginBtn) {
         completeLogin();
+        return;
+      }
+      if (postCategoryBtn) {
+        postCategory = postCategoryBtn.dataset.postCategory;
+        renderPosts();
+        showToast(`已切换到「${postCategory}」`);
+        return;
+      }
+      if (postSortBtn) {
+        postSort = postSortBtn.dataset.postSort;
+        renderPosts();
+        const labels = { recommend: "推荐", latest: "最新", nearby: "附近", hot: "最热" };
+        showToast(`已按「${labels[postSort]}」排序`);
+        return;
+      }
+      if (channelSearchBtn) {
+        channelSearchText = document.getElementById("channel-search-input").value.trim().toLowerCase();
+        renderChannelList();
+        showToast(channelSearchText ? `已搜索「${channelSearchText}」` : "已清空搜索");
         return;
       }
       if (presetBtn) {
@@ -2172,7 +2541,11 @@
           sortState.key = sortBtn.dataset.sort;
           sortState.direction = sortState.key === "hot" ? "desc" : "asc";
         }
-        renderActivityList();
+        if (document.getElementById("activity-list-page").classList.contains("active")) {
+          renderChannelList();
+        } else {
+          renderActivityList();
+        }
         const labels = { time: "时间", distance: "距离", hot: "热度", price: "价格" };
         showToast(`已按${labels[sortState.key]}${sortState.direction === "asc" ? "升序" : "降序"}排序`);
       }
@@ -2197,6 +2570,26 @@
         input.value = "";
         showToast("消息已发送");
       }
+      if (sendCommentBtn) {
+        if (requireLogin("post-detail")) return;
+        const input = document.getElementById("post-comment-input");
+        if (!input.value.trim()) return showToast("请输入评论");
+        const comment = document.createElement("div");
+        comment.className = "comment";
+        comment.innerHTML = `<b>我</b><p>${input.value.trim()}</p>`;
+        document.querySelector("#post-detail .info-block").appendChild(comment);
+        input.value = "";
+        showToast("评论已发布");
+      }
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key !== "Enter") return;
+      if (event.target && event.target.id === "channel-search-input") {
+        channelSearchText = event.target.value.trim().toLowerCase();
+        renderChannelList();
+        showToast(channelSearchText ? `已搜索「${channelSearchText}」` : "已清空搜索");
+      }
     });
 
     if (carouselTrack) {
@@ -2209,6 +2602,7 @@
       carousel.addEventListener("touchend", startCarousel, { passive: true });
     }
     renderActivityList();
+    renderPosts();
     startCarousel();
   </script>
 </body>
